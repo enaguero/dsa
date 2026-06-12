@@ -1,0 +1,35 @@
+[project]
+name = "dsa"
+version = "0.0.0"
+description = "DSA study repo organized around the NeetCode 150 problem set."
+requires-python = ">=3.11"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.5",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["build", "templates"]
+
+[tool.ruff.lint]
+# Be lenient: this is study code, not production.
+# Catch real bugs (F, E9), discourage broken imports (I), allow everything else.
+select = ["F", "E9", "I"]
+ignore = [
+  "F401",  # unused imports — common in study stubs (typing imports left for later use)
+  "F841",  # unused locals — common while sketching
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["problems"]
+python_files = ["*.py"]
+python_functions = ["test_*"]
+# Each problem stub may define test_* functions next to its Solution class.
+addopts = "-q --tb=short"

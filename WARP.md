@@ -4,102 +4,65 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Repository Purpose
 
-This is a Data Structures and Algorithms (DSA) study repository, organized around the NeetCode 150 problem set. The repository is structured for practicing coding interview problems across various algorithmic topics.
+DSA study repo organized around the [NeetCode 150](https://neetcode.io/practice) problem set. Solutions are **Python only**; long-form study notes live under `notes/` and build to PDFs via `make`.
+
+For the full project conventions (stub format, README/theory boundary, scripts), see `CLAUDE.md`.
+For the day-to-day solving workflow, see `docs/SOLVING.md`.
 
 ## Directory Structure
 
 ```
-neetcode/neetcode_150/
-├── 01_arrays_and_hashing/
-├── 02_two_pointers/
-├── 03_sliding_window/
-├── 04_stack/
-├── 05_binary_search/
-├── 06_linked_list/
-├── 07_trees/
-├── 08_tries/
-├── 09_heap_priority_queue/
-├── 10_backtracking/
-├── 11_graphs/
-├── 12_advanced_graphs/
-├── 13_1d_dynamic_programming/
-├── 14_2d_dynamic_programming/
-├── 15_greedy/
-├── 16_intervals/
-├── 17_math_and_geometry/
-└── 18_bit_manipulation/
+dsa/
+├── notes/             ← long-form study notes (cheatsheet, ram_model, roadmap, NEETCODE-150)
+├── problems/          ← NeetCode 150 solution stubs, grouped by topic
+│   ├── 01-arrays-and-hashing/
+│   ├── …
+│   └── 18-bit-manipulation/
+├── scripts/           ← regenerate_stubs.py, progress.py
+├── templates/         ← pandoc/LaTeX template (eisvogel)
+├── docs/              ← BUILDING.md, SOLVING.md
+├── build/             ← generated PDFs (gitignored)
+├── pyproject.toml
+├── Makefile
+└── readme.md
 ```
 
-Each directory corresponds to a specific algorithmic topic category from the NeetCode 150 list.
-
-## Working with Solutions
-
-### File Naming Convention
-When creating solution files, use descriptive names that include:
-- Problem difficulty (easy/medium/hard)
-- Problem name (snake_case)
-- File extension appropriate for the language
-
-Example: `medium_group_anagrams.py`, `easy_two_sum.js`
-
-### Solution File Structure
-Each solution should include:
-1. Problem description/link (as comment at top)
-2. Time and space complexity analysis
-3. Approach explanation
-4. Implementation
-5. Test cases (if applicable)
-
-### Language Support
-This repository can contain solutions in any programming language. When adding solutions:
-- Keep language-specific solutions in the appropriate topic directory
-- Use consistent naming conventions within each language
-- Include language-specific test commands if testing framework is set up
+Each topic folder under `problems/` contains a `README.md` (theory checklist + problem table), a `theory/notes.md` (deep derivations), and an `exercises/` folder with one Python file per problem. Solution filenames use the LeetCode URL slug in kebab-case, e.g. `exercises/two-sum.py`.
 
 ## Common Commands
 
-### Testing Solutions
-Since no test framework is currently configured, you'll need to run individual files directly:
-
-**Python:**
+**Run a solution:**
 ```bash
-python3 neetcode/neetcode_150/01_arrays_and_hashing/solution_name.py
+python3 problems/01-arrays-and-hashing/exercises/two-sum.py
 ```
 
-**JavaScript/Node:**
+**Update progress counter in `readme.md`:**
 ```bash
-node neetcode/neetcode_150/01_arrays_and_hashing/solution_name.js
+make progress
 ```
 
-**Java:**
+**Re-fetch LeetCode signatures into stubs (network):**
 ```bash
-javac neetcode/neetcode_150/01_arrays_and_hashing/SolutionName.java
-java -cp neetcode/neetcode_150/01_arrays_and_hashing SolutionName
+make regen
 ```
 
-### Finding Solutions by Topic
+**Search by problem name:**
 ```bash
-# List all solutions in a topic
-ls neetcode/neetcode_150/01_arrays_and_hashing/
-
-# Search for a specific problem
-find neetcode/neetcode_150 -name "*two_sum*"
-
-# Count solutions per topic
-for dir in neetcode/neetcode_150/*/; do echo "$(basename "$dir"): $(ls -1 "$dir" 2>/dev/null | wc -l)"; done
+find problems -name "*two-sum*"
 ```
 
-## Working on Problems
+**Count by status:**
+```bash
+grep -rl "Status: Stub" problems | wc -l         # unstarted
+grep -rl "Status: In-Progress" problems | wc -l  # WIP
+grep -rl "Status: Solved" problems | wc -l       # done
+```
 
-### Adding New Solutions
-1. Identify the appropriate topic directory
-2. Create file with descriptive name
-3. Include problem context and complexity analysis
-4. Implement solution with clear variable names
-5. Add test cases or examples
+**Build PDFs from notes:**
+```bash
+make all          # build everything in notes/ → build/
+make pdf          # default: build/ram_model.pdf
+make help         # see all targets
+```
 
-### Code Review Focus Areas
-- Time and space complexity accuracy
-- Edge case handling
-- Code clarity and readability
-- Alternative approaches documented
+See `docs/BUILDING.md` for PDF build prerequisites (mactex, pandoc, font setup) and `docs/SOLVING.md` for the solving workflow.

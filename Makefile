@@ -1,0 +1,105 @@
+PANDOC   ?= pandoc
+TEMPLATE := templates/eisvogel.latex
+NOTES    := notes
+BUILD    := build
+
+# xelatex on macOS uses CoreText for system font lookup and ignores fonts inside
+# the texlive tree unless OSFONTDIR points there. Without this, YAML font picks
+# like "TeX Gyre Pagella" fail with `fontspec Error: font cannot be found`.
+TEXLIVE_FONTS := $(firstword $(wildcard /usr/local/texlive/*/texmf-dist/fonts/opentype/public))
+export OSFONTDIR := $(TEXLIVE_FONTS)//
+
+SRCS := $(wildcard $(NOTES)/*.md)
+PDFS := $(patsubst $(NOTES)/%.md,$(BUILD)/%.pdf,$(SRCS))
+TEXS := $(patsubst $(NOTES)/%.md,$(BUILD)/%.tex,$(SRCS))
+
+# Default note for `make pdf` / `make tex` / `make watch` (override: make pdf SRC=cheatsheet)
+SRC ?= ram_model
+PDF := $(BUILD)/$(SRC).pdf
+TEX := $(BUILD)/$(SRC).tex
+
+PANDOC_FLAGS := \
+  --template=$(TEMPLATE) \
+  --pdf-engine=xelatex \
+  --syntax-highlighting=tango \
+  --top-level-division=section \
+  --number-sections \
+  --toc
+
+# --- Beamer slides ---
+# Slide sources live under notes/slides/ so the top-level wildcard in SRCS
+# (line 12) doesn't pick them up and `make all` keeps building article PDFs only.
+SLIDES_DIR  := $(NOTES)/slides
+SLIDES_SRCS := $(wildcard $(SLIDES_DIR)/ram_model_part*.md)
+SLIDES_PDFS := $(patsubst $(SLIDES_DIR)/ram_model_part%.md,$(BUILD)/slides_ram_part%.pdf,$(SLIDES_SRCS))
+
+PANDOC_BEAMER_FLAGS := \
+  -t beamer \
+  --pdf-engine=xelatex \
+  --syntax-highlighting=tango \
+  --slide-level=3
+
+.PHONY: all pdf tex clean watch help list progress regen review slides slides-clean
+
+help:
+	@echo "Targets:"
+	@echo "  make all                   - build PDFs for every note in $(NOTES)/"
+	@echo "  make pdf                   - build $(PDF) from $(NOTES)/$(SRC).md"
+	@echo "  make tex                   - build $(TEX) from $(NOTES)/$(SRC).md"
+	@echo "  make $(BUILD)/<name>.pdf $(if $(BUILD), )- build a specific PDF (e.g. make $(BUILD)/cheatsheet.pdf)"
+	@echo "  make watch                 - rebuild $(PDF) on every save of $(NOTES)/$(SRC).md (needs fswatch)"
+	@echo "  make list                  - list all buildable markdown sources"
+	@echo "  make clean                 - remove the $(BUILD)/ directory"
+	@echo "  make progress              - update readme.md progress line from problem statuses"
+	@echo "  make regen                 - re-fetch LeetCode signatures for all stubs (network)"
+	@echo "  make review                - list solved problems by oldest Last-Reviewed (spaced rep)"
+	@echo "  make slides                - build all beamer decks (build/slides_ram_part*.pdf)"
+	@echo "  make $(BUILD)/slides_ram_part1.pdf - build a single deck (1-5)"
+	@echo "  make slides-clean          - remove only the slide PDFs"
+	@echo ""
+	@echo "Override the default source:  make pdf SRC=cheatsheet"
+
+list:
+	@echo "Sources: $(SRCS)"
+	@echo "PDFs:    $(PDFS)"
+
+all: $(PDFS)
+
+pdf: $(PDF)
+tex: $(TEX)
+
+$(BUILD):
+	@mkdir -p $(BUILD)
+
+$(BUILD)/%.pdf: $(NOTES)/%.md $(TEMPLATE) | $(BUILD)
+	$(PANDOC) $< -o $@ $(PANDOC_FLAGS)
+
+$(BUILD)/%.tex: $(NOTES)/%.md $(TEMPLATE) | $(BUILD)
+	$(PANDOC) $< -o $@ --standalone $(PANDOC_FLAGS)
+
+slides: $(SLIDES_PDFS)
+
+slides-clean:
+	rm -f $(BUILD)/slides_ram_part*.pdf $(BUILD)/slides_ram_part*.tex
+
+$(BUILD)/slides_ram_part%.pdf: $(SLIDES_DIR)/ram_model_part%.md | $(BUILD)
+	$(PANDOC) $< -o $@ $(PANDOC_BEAMER_FLAGS)
+
+$(BUILD)/slides_ram_part%.tex: $(SLIDES_DIR)/ram_model_part%.md | $(BUILD)
+	$(PANDOC) $< -o $@ --standalone $(PANDOC_BEAMER_FLAGS)
+
+clean:
+	rm -rf $(BUILD)
+
+watch:
+	@command -v fswatch >/dev/null 2>&1 || { echo "fswatch not installed. brew install fswatch"; exit 1; }
+	fswatch -o $(NOTES)/$(SRC).md | xargs -n1 -I{} $(MAKE) $(PDF)
+
+progress:
+	@python3 scripts/progress.py
+
+regen:
+	@python3 scripts/regenerate_stubs.py
+
+review:
+	@python3 scripts/review.py
