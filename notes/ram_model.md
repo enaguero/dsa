@@ -1853,4 +1853,1123 @@ These alternatives have produced more practically meaningful bounds for caching,
 
 ---
 
+## B. Practice exercises
+
+This annex is for active practice. Each exercise is a self-contained problem you can attempt in 5–30 minutes; full worked solutions are in §C so you can attempt the exercises here and consult the solutions only after. Exercises are tagged by difficulty:
+
+- [easy] **mechanical** — apply a definition or technique from the referenced section.
+- [med] **synthesis** — combine two or more techniques, or transfer a method to a new setting.
+- [hard] **insight** — require finding the right perspective; nontrivial even with the text open.
+
+Each exercise's parenthetical "_Practices §X._" line points back to the section that supplies the relevant technique. Always work the exercise first; consult §C only when stuck or to verify.
+
+### B.1 — Part I: The RAM model
+
+#### B.1.1 [easy] Trace a doubling program
+
+*Practices §2.3.* Given the RAM program
+
+```text
+1: READ  R[0]
+2: ADD   R[0], R[0], R[0]
+3: WRITE R[0]
+4: HALT
+```
+
+trace the configurations $C_t = (\ell, R[0], \text{output})$ from $C_0$ on input $x = 5$. How many transitions to HALT? What is the output?
+
+#### B.1.2 [med] Maximum of three inputs
+
+*Practices §2.3, §13.2.* Write a short RAM program (using `READ`, `MOVE`, `JZERO`, `SUB`, `JUMP`, `WRITE`, `HALT`) that reads three integers from the input tape and writes the largest. Then trace it on input $7, 3, 12$. How many transitions does it take? *(Hint: a "compare R[i] with R[j]" template is `SUB R[temp], R[i], R[j]; JZERO ...` — use `JZERO` on the sign-bit trick or assume an extra `JNEG` instruction.)*
+
+#### B.1.3 [med] Trial division and input size
+
+*Practices §3.3, §13.1, §22.2.* A function tests whether a positive integer $N$ is prime by checking divisibility by every integer in $2, 3, \ldots, \lfloor \sqrt N \rfloor$.
+
+(a) Express the running time as a function of $N$.
+
+(b) The input is $N$ written in binary, so the actual *input size* is $n = \lceil \log_2 N \rceil$ bits. Express the running time as a function of $n$.
+
+(c) Is this algorithm polynomial-time in the input size?
+
+#### B.1.4 [easy] Word fit
+
+*Practices §3.2.* On a 64-bit machine, which of these values fit in a single machine word? For those that don't, how many words do they need?
+
+(a) The number $10^{18}$.
+
+(b) An array index into a list of $2^{20}$ elements.
+
+(c) The product of two 1000-bit primes.
+
+(d) The IEEE 754 double-precision encoding of $\pi$.
+
+#### B.1.5 [med] Cost criterion comparison
+
+*Practices §4.1, §4.2.* Consider computing $a^{2^k}$ by repeated squaring: $a \to a^2 \to a^4 \to \cdots \to a^{2^k}$, in $k$ squarings.
+
+(a) Under the uniform cost criterion, what is the total cost?
+
+(b) Under the logarithmic cost criterion, what is the total cost? (The result of step $i$ has bit length proportional to $2^i \cdot \log_2 a$.)
+
+(c) When does the uniform-cost answer mislead you about real-world performance?
+
+#### B.1.6 [hard] Polynomial equivalence in practice
+
+*Practices §5.1.* The polynomial-equivalence result guarantees that any RAM algorithm running in time $T(n)$ can be simulated by a Turing machine in time $O(T(n)^3)$.
+
+(a) Suppose a RAM algorithm runs in $\Theta(n^3)$. The simulation theorem gives at most $\Theta(n^9)$ on a Turing machine. Construct a concrete scenario in which, for a fixed wall-clock budget, the RAM algorithm finishes on inputs of size $n = 100$ but the Turing machine cannot.
+
+(b) Argue why this performance gap does not undermine the membership of the *problem* in $\mathbf{P}$.
+
+### B.2 — Part II: Asymptotic analysis
+
+#### B.2.1 [easy] Apply the Big O definition
+
+*Practices §7.1.* Prove from the definition: $3n + 5 = O(n)$. Give explicit constants $c$ and $n_0$ such that $3n + 5 \le c \cdot n$ for all $n \ge n_0$.
+
+#### B.2.2 [easy] Apply the Big Theta definition
+
+*Practices §7.3.* Prove from the definition: $\dfrac{n^2 - 3n + 7}{2} = \Theta(n^2)$. Give explicit $c_1, c_2, n_0$ such that $c_1 n^2 \le \tfrac{n^2 - 3n + 7}{2} \le c_2 n^2$ for all $n \ge n_0$.
+
+#### B.2.3 [easy] True or false
+
+*Practices §7.1, §9.4, §9.8.* State true or false and justify each in one sentence.
+
+(a) $n^2 = O(n^3)$.
+
+(b) $n^3 = O(n^2)$.
+
+(c) $100\,n = \Theta(n)$.
+
+(d) $2^{n+1} = O(2^n)$.
+
+(e) $2^{2n} = O(2^n)$.
+
+#### B.2.4 [easy] Order by growth
+
+*Practices §11.* Order from slowest-growing to fastest:
+
+$$n, \;\; \log n, \;\; \sqrt n, \;\; n^2, \;\; n \log n, \;\; 2^n, \;\; n!, \;\; \log \log n, \;\; n^{\log_2 n}, \;\; (\log n)^{10}.$$
+
+#### B.2.5 [med] Limit-based comparison
+
+*Practices §10.* Use limits (and L'Hôpital's rule where useful) to determine whether $f = o(g)$, $f = \Theta(g)$, or $f = \omega(g)$.
+
+(a) $f(n) = n^{0.99}$, $g(n) = n^{0.99} \log n$.
+
+(b) $f(n) = n \log n$, $g(n) = n^2 / \log n$.
+
+(c) $f(n) = 2^{\log_2 n}$, $g(n) = n$.
+
+(d) $f(n) = \log(n!)$, $g(n) = n \log n$.
+
+(e) $f(n) = \sqrt{\log n}$, $g(n) = \log \log n$.
+
+#### B.2.6 [med] Prove or disprove
+
+*Practices §7.1, §9.3, §9.6.* For each statement, prove it or give a counterexample.
+
+(a) $f = O(g)$ and $g = O(h)$ implies $f = O(h)$.
+
+(b) $f + g = O(\max(f, g))$.
+
+(c) $f = O(g)$ implies $2^{f(n)} = O(2^{g(n)})$.
+
+#### B.2.7 [easy] Sum and product rules
+
+*Practices §9.5, §9.6.* Simplify each expression into a single $O(\cdot)$ class.
+
+(a) $O(n) + O(n^2) + O(n \log n)$.
+
+(b) $O(n) \cdot O(\log n) + O(n^2)$.
+
+(c) $O(1) + O(\log n) + O(\sqrt n) + O(n)$.
+
+#### B.2.8 [med] Logarithm tricks
+
+*Practices §9.8.* Without using limits or Stirling, show:
+
+(a) $\log_2(n^{10}) = \Theta(\log n)$.
+
+(b) $\log_{10} n = \Theta(\log_2 n)$.
+
+(c) $\log(2^n) = \Theta(n)$.
+
+(d) For any constants $a > 1$, $b > 1$: $a^{\log_b n} = \Theta(n^{\log_b a})$.
+
+#### B.2.9 [med] Stirling in action
+
+*Practices §9.8, §15.4.* Using Stirling's approximation $n! = \sqrt{2 \pi n}(n/e)^n(1 + \Theta(1/n))$:
+
+(a) Derive a closed-form expression for $\log(n!)$ up to lower-order terms.
+
+(b) Confirm $\log(n!) = \Theta(n \log n)$, the foundation of the $\Omega(n \log n)$ sorting lower bound (§24.1).
+
+#### B.2.10 [med] When the limit does not exist
+
+*Practices §10.* Construct two functions $f, g: \mathbb{N} \to \mathbb{R}^+$ such that $\lim_{n \to \infty} f(n) / g(n)$ does *not* exist, yet $f = O(g)$. Justify your example using $\limsup$.
+
+#### B.2.11 [easy] Will it fit?
+
+*Practices §11.3.* On a machine that executes about $10^8$ simple ops/second, predict whether each will finish in under 1 second (Y/N).
+
+(a) $n = 10^5$, complexity $\Theta(n^2)$.
+
+(b) $n = 10^7$, complexity $\Theta(n \log n)$.
+
+(c) $n = 30$, complexity $\Theta(2^n)$.
+
+(d) $n = 10^9$, complexity $\Theta(n)$.
+
+(e) $n = 12$, complexity $\Theta(n!)$.
+
+#### B.2.12 [hard] Asymptotically faster ≠ faster in practice
+
+*Practices §22.9.* Algorithm $A$ runs in $10^6 n$ steps; algorithm $B$ runs in $n^2$ steps.
+
+(a) Determine the threshold $n^*$ such that $A$ is faster for $n > n^*$ and $B$ is faster for $n < n^*$.
+
+(b) For $n = 10^4$, which is faster, and by how much?
+
+(c) What does this tell you about the practical meaning of "asymptotically faster"?
+
+### B.3 — Part III: The mechanics of algorithm analysis
+
+#### B.3.1 [easy] Loop analysis drills
+
+*Practices §14.1, §14.2.* State the asymptotic running time of each loop fragment.
+
+(a) `for i in range(n): for j in range(n): pass`
+
+(b) `for i in range(n): for j in range(2*n): pass`
+
+(c) `for i in range(n): pass; for j in range(n): pass` (sequential, not nested)
+
+(d) `for i in range(n*n): pass`
+
+#### B.3.2 [med] Three nested triangular loops
+
+*Practices §14.3, §15.1.* Analyze:
+
+```text
+for i in range(n):
+    for j in range(i, n):
+        for k in range(j, n):
+            pass
+```
+
+Express the total iterations as a sum and simplify to a closed form. What is the asymptotic complexity?
+
+#### B.3.3 [med] Geometric loop variants
+
+*Practices §14.4.* Analyze:
+
+```text
+i = 1
+while i < n:
+    constant-time work
+    i = i * 3
+```
+
+(a) Number of iterations as a function of $n$?
+
+(b) Asymptotic running time?
+
+(c) What changes if the update is `i = i * i` instead?
+
+#### B.3.4 [med] Sum-of-divisors loop
+
+*Practices §14.5, §15.3.* Analyze:
+
+```text
+for i in range(1, n+1):
+    for j in range(i, n+1, i):   # j = i, 2i, 3i, ..., up to n
+        constant-time work
+```
+
+The inner loop runs $\lfloor n / i \rfloor$ times. Use the harmonic series to determine the total cost.
+
+#### B.3.5 [med] Loop with a guard
+
+*Practices §14.6, §19.* Analyze:
+
+```text
+i = 0; counter = 0
+while i < n:
+    counter += 1
+    if counter % 2 == 0:
+        i += 1
+    else:
+        i += 5
+```
+
+What is the running time as a function of $n$?
+
+#### B.3.6 [hard] Doubly-exponential loop
+
+*Practices §14, §10.* Analyze the number of iterations of
+
+```text
+i = 2
+while i < n:
+    i = i * i
+```
+
+(Hint: take logs. After $k$ iterations $i = 2^{2^k}$.)
+
+#### B.3.7 [med] Solve by recursion tree
+
+*Practices §16.1.* Draw the recursion tree for $T(n) = 4 T(n/2) + n$, $T(1) = 1$, and solve it. Identify the per-level work and the per-level node count; sum.
+
+#### B.3.8 [easy] Master Theorem drills
+
+*Practices §17.* For each recurrence, identify $a$, $b$, $c^* = \log_b a$, and apply the Master Theorem to read off $T(n)$.
+
+(a) $T(n) = 2 T(n/4) + n$.
+
+(b) $T(n) = 9 T(n/3) + n^2$.
+
+(c) $T(n) = T(n/2) + 1$.
+
+(d) $T(n) = T(2n/3) + n$.
+
+(e) $T(n) = 16 T(n/4) + n^2 \log n$.
+
+(f) $T(n) = 4 T(n/2) + n^2 / \log n$. *(Careful: which case, if any?)*
+
+#### B.3.9 [med] All three methods on the same recurrence
+
+*Practices §16.1, §16.3, §17.* Solve $T(n) = 3 T(n/2) + n^2$, $T(1) = 1$, three ways: (a) recursion tree, (b) Master Theorem, (c) substitution method. Confirm all three give the same answer.
+
+#### B.3.10 [med] Substitution with strengthened hypothesis
+
+*Practices §16.3.* Solve $T(n) = T(\lfloor n/2 \rfloor) + T(\lfloor n/4 \rfloor) + n$, $T(1) = 1$, by substitution. *(Hint: guess $T(n) \le c n$ and watch what fails; then strengthen by subtracting a lower-order term.)*
+
+#### B.3.11 [hard] Akra–Bazzi with non-integer $p$
+
+*Practices §18.* For $T(n) = T(n/3) + T(n/4) + n$, the Akra–Bazzi exponent $p$ satisfies $(1/3)^p + (1/4)^p = 1$.
+
+(a) Numerically estimate $p$ to three decimals (binary search, or evaluate at $p = 0.5, 0.75, 0.8, 0.79$).
+
+(b) Use the Akra–Bazzi integral to deduce $T(n)$.
+
+#### B.3.12 [med] Where the Master Theorem stays silent
+
+*Practices §17.5, §22.7.* Show that the Master Theorem does *not* apply to $T(n) = 2 T(n/2) + n / \log n$. Identify which case it fails. Then solve the recurrence directly (recursion tree or substitution).
+
+#### B.3.13 [med] Dynamic array, three amortized methods
+
+*Practices §19.1, §19.2.* For the doubling dynamic array, the amortized cost of `push` is $O(1)$. Prove this three ways:
+
+(a) **Aggregate**: bound the total cost of any $n$ pushes by some $T(n)$, then divide.
+
+(b) **Accounting**: charge each push 3 credits; show this pays for reallocations.
+
+(c) **Potential**: let $\Phi(i) = 2 \cdot \text{size}_i - \text{capacity}_i$. Show $\hat c_i = c_i + \Delta\Phi_i = O(1)$ for every operation.
+
+#### B.3.14 [hard] Shrinking dynamic array
+
+*Practices §19.2, §19.4.* Now allow `pop` from the dynamic array, with a shrinking policy:
+
+(a) Show that "halve the capacity when load drops below $1/2$" allows an adversary to force $\Theta(n)$ amortized cost. Construct the adversarial sequence.
+
+(b) Prove that "halve the capacity when load drops below $1/4$" gives $O(1)$ amortized using a potential function. Suggested $\Phi$: $\max(\text{capacity}/2 - \text{size},\; 2 \cdot \text{size} - \text{capacity})$.
+
+#### B.3.15 [med] Stack with multipop, accounting method
+
+*Practices §19.3.* A stack supports `push` (cost 1), `pop` (cost 1), and `multipop(k)` (pop $\min(k, \text{size})$ elements, cost = items popped). Using the accounting method, show that any sequence of $m$ operations starting from an empty stack costs $O(m)$ total. State the per-operation amortized cost.
+
+#### B.3.16 [easy] Auxiliary space drills
+
+*Practices §20.1, §20.2.* State the auxiliary space (excluding the input itself).
+
+(a) Iterative reversal of an array of $n$ integers in place.
+
+(b) Recursive Fibonacci with memoization on `n`.
+
+(c) Mergesort (standard version, allocating per-merge scratch).
+
+(d) Iterative DFS on a tree with $n$ nodes using an explicit stack.
+
+(e) Generating all subsets of an $n$-element set into a list.
+
+#### B.3.17 [med] Rolling-row LCS
+
+*Practices §20.4, §26.2.* The LCS algorithm of §26.2 uses $\Theta(nm)$ space when storing the full DP table. Reduce the algorithm to $\Theta(\min(n, m))$ space while keeping the same $\Theta(nm)$ time. Write down the loop structure and the two rolling rows. What capability do you lose?
+
+#### B.3.18 [med] Recursive vs iterative space
+
+*Practices §20.3.* Iterative binary search uses $\Theta(1)$ auxiliary space; recursive binary search uses $\Theta(\log n)$.
+
+(a) Exactly *where* is the recursive version spending the extra space?
+
+(b) Can a Python implementation of recursive binary search achieve $\Theta(1)$ space by relying on tail-call optimization? Argue.
+
+#### B.3.19 [med] Expected number of fixed points
+
+*Practices §21.* Pick a uniformly random permutation of $\{1, 2, \ldots, n\}$. Let $X$ be the number of fixed points (indices $i$ with $\pi(i) = i$). Use indicator variables to compute $\mathbb{E}[X]$. The answer is independent of $n$.
+
+#### B.3.20 [med] Expected maximum of uniform draws
+
+*Practices §21, §15.5.* Draw $n$ i.i.d. samples uniformly from $[0, 1]$. Let $M$ be the maximum.
+
+(a) Compute $\Pr[M \le x]$ for $x \in [0, 1]$.
+
+(b) Use the identity $\mathbb{E}[M] = \int_0^1 \Pr[M > x] \, dx$ to compute $\mathbb{E}[M]$. The answer is a simple function of $n$.
+
+#### B.3.21 [hard] Randomized quicksort, alternative derivation
+
+*Practices §21.1.* The standard analysis of randomized quicksort sums pairwise indicator probabilities $\Pr[z_i \text{ and } z_j \text{ compared}] = 2/(j-i+1)$. Re-derive the $\Theta(n \log n)$ bound by instead computing the expected number of comparisons performed on a single subproblem of size $k$, and writing a recurrence for the expectation. Show both derivations land on the same $2 H_n - 2$ summation.
+
+#### B.3.22 [med] Find the bug
+
+*Practices §22.2, §22.4, §22.5.* A student turns in this proof:
+
+> "I'll show that trial-division primality testing is polynomial-time. The algorithm tests divisibility by every $d$ in $2, \ldots, \lfloor \sqrt N \rfloor$. So the running time is $T(N) = O(\sqrt N)$, which is $O(N^{0.5})$, which is a polynomial in $N$. Therefore primality testing is polynomial-time, i.e., in $\mathbf{P}$."
+
+Identify the flaw. State the actual asymptotic complexity in terms of the *input size*, and explain in one sentence why this disqualifies the algorithm from showing primality $\in \mathbf{P}$ (even though primality *is* in $\mathbf{P}$ — proven by AKS 2002).
+
+### B.4 — Part IV: Practical catalog
+
+#### B.4.1 [easy] Compare mergesort and quicksort
+
+*Practices §24.3, §24.4.* You have $n = 10^6$ integers to sort. For each criterion, compare mergesort and randomized quicksort.
+
+(a) Average-case running time.
+
+(b) Worst-case running time.
+
+(c) Auxiliary space.
+
+(d) Cache locality (qualitative).
+
+(e) Stability.
+
+#### B.4.2 [med] Stability of mergesort
+
+*Practices §24.* Prove that mergesort is *stable*: if two input elements are equal, their relative order is preserved in the output. What single line of the standard `merge` routine is the load-bearing one, and what change breaks stability?
+
+#### B.4.3 [med] Lower bound for element distinctness
+
+*Practices §24.1, §32.1.* The element-distinctness problem: given $n$ items, are all of them distinct? Adapt the decision-tree argument of §24.1 to prove an $\Omega(n \log n)$ lower bound in the comparison model.
+
+#### B.4.4 [med] Heapsort properties
+
+*Practices §24.5.* Build-heap on $n$ items costs $\Theta(n)$, and $n$ extract-max operations each cost $\Theta(\log n)$, giving $\Theta(n \log n)$ total.
+
+(a) Is heapsort stable? Why or why not?
+
+(b) Compare the cost of heapsort to mergesort and quicksort on nearly-sorted input.
+
+(c) Despite asymptotic optimality, heapsort is rarely chosen as a default library sort. Name two practical reasons.
+
+#### B.4.5 [easy] Search strategy trade-off
+
+*Practices §23.* You need to perform $m$ lookups on a static collection of $n$ keys. Three strategies:
+
+- Linear search: build $\Theta(1)$, per-lookup $\Theta(n)$.
+- Binary search after sorting: build $\Theta(n \log n)$, per-lookup $\Theta(\log n)$.
+- Hash map: build $\Theta(n)$, per-lookup $\Theta(1)$ average.
+
+For each strategy, write the total cost as a function of $m$ and $n$. State the value of $m$ above which strategy 3 dominates strategy 1, and above which strategy 2 dominates strategy 1.
+
+#### B.4.6 [med] BFS finds shortest paths
+
+*Practices §25.1.* Let $d(s, v)$ denote the unweighted shortest-path distance from $s$ to $v$, and let $L_k = \{v : d(s, v) = k\}$. Prove by induction on $k$ that BFS-from-$s$ enqueues every vertex of $L_k$ before any vertex of $L_{k+1}$. Conclude that BFS labels each vertex with its true shortest-path distance.
+
+#### B.4.7 [med] Dijkstra's correctness invariant
+
+*Practices §25.2.* State the invariant maintained by Dijkstra's algorithm at the moment a vertex $v$ is extracted from the priority queue. Use it to prove that the extracted distance equals $d(s, v)$ when all edge weights are non-negative. At which step of the proof does the argument fail in the presence of negative weights?
+
+#### B.4.8 [hard] Smallest counterexample to Dijkstra
+
+*Practices §25.2, §25.3.* 
+
+(a) Construct the smallest directed graph (in $|V| + |E|$) on which Dijkstra returns a wrong shortest-path distance because of a single negative edge.
+
+(b) Trace Bellman–Ford on the same graph and confirm it returns the correct distances after $|V| - 1$ relaxation passes.
+
+#### B.4.9 [med] DP state space identification
+
+*Practices §26.* For each problem, identify (i) the set of subproblems (state space), (ii) the cost of solving one state given its predecessors, and (iii) the total time complexity.
+
+(a) Longest increasing subsequence of an array of length $n$.
+
+(b) Coin change: minimum number of coins to make value $V$ from denominations $\{c_1, \ldots, c_k\}$.
+
+(c) Longest palindromic substring of a string of length $n$.
+
+#### B.4.10 [med] Why pseudo-polynomial?
+
+*Practices §22.2, §26.6.* The 0/1 knapsack DP runs in $\Theta(nW)$.
+
+(a) State the *input size* of a knapsack instance, in bits, as a function of $n$ and $W$.
+
+(b) Express the running time as a function of the input size. Is it polynomial?
+
+(c) Sketch a polynomial-time *approximation* — a strategy that finds a knapsack value within a $(1 - \varepsilon)$ factor of the optimum in time polynomial in $n$ and $1/\varepsilon$. *(Hint: round the item values.)*
+
+#### B.4.11 [med] LCS space reduction
+
+*Practices §20.4, §26.2.* Reduce the LCS DP of §26.2 from $\Theta(nm)$ to $\Theta(\min(n, m))$ space without changing the time. Write the inner loops explicitly. What capability does this version *lose*?
+
+#### B.4.12 [hard] Linear-time comparison sort?
+
+*Practices §24.1.* A colleague excitedly tells you they've discovered a comparison-based sorting algorithm that runs in $O(n)$ worst-case on every input. Without examining the code, what flaw must their analysis or their algorithm contain? State and apply the lower bound.
+
+### B.5 — Part V: Beyond the basic RAM model
+
+#### B.5.1 [easy] Wall-clock cost of poor locality
+
+*Practices §28.2.* Suppose a program touches each of $10^9$ values exactly once. Using the latency table from §28.2, estimate the total wall-clock time if every access hits:
+
+(a) Registers.
+
+(b) L1 cache.
+
+(c) Main memory.
+
+(d) Spinning disk.
+
+State the lesson in one sentence.
+
+#### B.5.2 [easy] External-memory scanning bounds
+
+*Practices §29.2.* In the external-memory model with block size $B$, compute the I/O complexity of each operation on an array of $N$ items.
+
+(a) Linear scan from left to right.
+
+(b) Computing the sum of all items.
+
+(c) Reversing the array in place (with $O(1)$ internal-memory).
+
+(d) Mergesorting the array.
+
+#### B.5.3 [med] Matrix transpose in external memory
+
+*Practices §29, §30.* You transpose an $N \times N$ matrix stored in row-major order.
+
+(a) In RAM, the cost is $\Theta(N^2)$.
+
+(b) In the external-memory model with $B \ll N$, the naïve transpose costs $\Theta(N^2)$ I/Os, far worse than the $\Theta(N^2 / B)$ a single scan would cost. Why?
+
+(c) Sketch how a recursive cache-oblivious transpose reduces I/O cost to $\Theta(N^2 / B)$.
+
+#### B.5.4 [med] B-tree depth
+
+*Practices §29.2.* A B-tree with branching factor $B$ holds $N$ keys.
+
+(a) Express its height $h$ in terms of $N$ and $B$.
+
+(b) State the worst-case I/O complexity of a single search.
+
+(c) For $N = 10^{10}$ and $B = 100$, give a concrete value of $h$.
+
+#### B.5.5 [med] Work and span for three parallel algorithms
+
+*Practices §31.2.* For each algorithm, compute work $W$, span $S$, and parallelism $W / S$ as a function of $n$.
+
+(a) Sum of $n$ values via balanced-tree reduction.
+
+(b) Hillis–Steele parallel prefix-sum scan of $n$ values.
+
+(c) Parallel mergesort where each recursive call is parallel but the merge step is sequential.
+
+#### B.5.6 [med] Brent's bound
+
+*Practices §31.2.* A parallel algorithm has $W(n) = n^2$ and $S(n) = n$.
+
+(a) Apply Brent's bound to express the running time $T_p(n)$ on $p$ processors as a function of $n$ and $p$.
+
+(b) For what value of $p$ (in terms of $n$) does adding more processors stop helping?
+
+(c) For $n = 10^6$, what is the parallelism, and what does it tell you about the maximum useful number of processors?
+
+#### B.5.7 [med] Adversary lower bound for second-smallest
+
+*Practices §32.2.* Prove that any comparison-based algorithm to find the second-smallest of $n$ elements requires at least $n + \lceil \log_2 n \rceil - 2$ comparisons in the worst case.
+
+*Hint:* the smallest element must have been compared against at least $\lceil \log_2 n \rceil$ other elements before it can be identified; the second-smallest must be among the elements compared (and beaten) by the smallest.
+
+#### B.5.8 [med] The taxi-or-bus dilemma
+
+*Practices §33.1.* You arrive at a bus stop. The bus will arrive at an unknown time $T \in [0, \infty)$, which is independent of your choices. At every moment, you can either keep waiting (free) or hail a taxi (cost $c > 0$ and you arrive immediately). If you wait time $w$ and then take a taxi, your total cost is $w + c$; if you wait until the bus arrives, your total cost is $T$.
+
+(a) What is the optimal *offline* cost, given full knowledge of $T$?
+
+(b) Show that the deterministic strategy "wait until $w^* = c$ minutes have passed; then take a taxi" achieves competitive ratio $2$.
+
+(c) Argue that no deterministic strategy can achieve a competitive ratio strictly less than $2$ against an adversarial $T$.
+
+---
+
+## C. Worked solutions
+
+Each solution carries the same number as its exercise (B.k.j ↔ C.k.j). Solutions are intentionally a bit more discursive than strict proofs — they show the technique, not just the answer. Attempt the exercise in §B *before* reading the matching solution.
+
+### C.1 — Part I solutions
+
+#### C.1.1
+
+| $t$ | $\ell$ | $R[0]$ | output | comment |
+|---|---|---|---|---|
+| 0 | 1 | 0 | — | $C_0$, initial |
+| 1 | 2 | 5 | — | after `READ R[0]` |
+| 2 | 3 | 10 | — | after `ADD R[0], R[0], R[0]` |
+| 3 | 4 | 10 | $10$ | after `WRITE R[0]` |
+| 4 | halt | 10 | $10$ | after `HALT` |
+
+**Four transitions; output $10$.**
+
+#### C.1.2
+
+A standard pattern (assuming an extra `JNEG` instruction for "jump if negative" — without it you would chain a `SUB`/`JZERO` combination):
+
+```text
+1:  READ  R[0]                    ; a
+2:  READ  R[1]                    ; b
+3:  READ  R[2]                    ; c
+4:  SUB   R[3], R[1], R[0]        ; b - a
+5:  JNEG  R[3], 8                 ; if b < a, skip to compare a with c
+6:  MOVE  R[0], R[1]              ; else a := b
+7:  JUMP  8
+8:  SUB   R[3], R[2], R[0]        ; max(a,b) - c
+9:  JNEG  R[3], 11
+10: MOVE  R[0], R[2]              ; if c larger, a := c
+11: WRITE R[0]
+12: HALT
+```
+
+Tracing on input $7, 3, 12$:
+
+| $t$ | $\ell$ | $R[0]$ | $R[1]$ | $R[2]$ | $R[3]$ | output |
+|---|---|---|---|---|---|---|
+| 0 | 1 | 0 | 0 | 0 | 0 | — |
+| 1 | 2 | 7 | 0 | 0 | 0 | — |
+| 2 | 3 | 7 | 3 | 0 | 0 | — |
+| 3 | 4 | 7 | 3 | 12 | 0 | — |
+| 4 | 5 | 7 | 3 | 12 | $-4$ | — |
+| 5 | 8 | 7 | 3 | 12 | $-4$ | — (taken: $R[3] < 0$) |
+| 6 | 9 | 7 | 3 | 12 | $5$ | — |
+| 7 | 10 | 7 | 3 | 12 | $5$ | — (not taken: $R[3] \geq 0$) |
+| 8 | 11 | 12 | 3 | 12 | $5$ | — |
+| 9 | 12 | 12 | 3 | 12 | $5$ | $12$ |
+| 10 | halt | — | — | — | — | $12$ |
+
+**Ten transitions; output $12$.** (The exact step count depends on instruction set details; minor differences are fine. The point is that "max-of-three" is constant-time in $n$ — it has no loop.)
+
+#### C.1.3
+
+(a) **Running time as a function of $N$:** $\Theta(\sqrt N)$ — one modulo per candidate divisor.
+
+(b) **Running time as a function of input size $n = \lceil \log_2 N \rceil$:** $N = 2^n$, so $\sqrt N = 2^{n/2}$. Substituting: $\Theta(2^{n/2})$.
+
+(c) **No** — the algorithm is *exponential* in the input size. Polynomial-time in the input would mean $O(\mathrm{poly}(n))$, but $\Theta(2^{n/2})$ is exponential. This is the canonical "pseudo-polynomial" trap (§22.2): polynomial in the *value* of the number, exponential in the *bit length*. Primality is in $\mathbf{P}$ but the proof requires the much more sophisticated AKS algorithm, not trial division.
+
+#### C.1.4
+
+(a) **$10^{18}$ fits in one 64-bit word.** $\log_2(10^{18}) \approx 59.8 < 64$, so the value $10^{18}$ is comfortably below $2^{64} \approx 1.84 \times 10^{19}$.
+
+(b) **An index into $2^{20}$ elements fits in one word easily.** $20 \ll 64$.
+
+(c) **The product of two 1000-bit primes does not fit.** It has up to $2000$ bits, requiring $\lceil 2000/64 \rceil = 32$ words.
+
+(d) **An IEEE 754 double fits in one word.** It is exactly $64$ bits by definition.
+
+#### C.1.5
+
+(a) **Uniform cost:** each squaring is $1$ step, so $k$ squarings cost $\Theta(k)$.
+
+(b) **Logarithmic cost:** after squaring $i$ times the operand has bit length proportional to $2^i \cdot \log_2 a$. So step $i$ costs $\Theta(2^i \log a)$, and the total is
+$$\sum_{i=0}^{k-1} \Theta(2^i \log a) = \Theta((2^k - 1) \log a) = \Theta(2^k \log a).$$
+The result is exponential in $k$.
+
+(c) **The uniform-cost answer misleads when the operands grow.** Once they exceed a word, "one squaring" is no longer one CPU instruction — it is a big-integer multiplication taking $\Theta(L^2)$ or $\Theta(L \log L)$ bit operations, where $L$ is the current bit length. For cryptographic-scale numbers, modeling each multiplication as $O(1)$ is a serious underestimate.
+
+#### C.1.6
+
+(a) **Concrete scenario.** The RAM algorithm takes $T_{\mathrm{RAM}}(100) = 100^3 = 10^6$ steps; at $10^8$ ops/s, that finishes in $10\,\mathrm{ms}$. The simulating Turing machine takes $T_{\mathrm{TM}}(100) \le c \cdot 100^9 = 10^{18}\, c$ steps; even at $10^{10}$ tape moves/sec (an extremely optimistic abstract bound), that takes $10^8 \cdot c$ seconds — over three years. So in a one-second wall-clock budget, the RAM finishes and the TM does not.
+
+(b) **Membership in $\mathbf{P}$ is about *existence* of a polynomial-time algorithm, not about which model runs it efficiently.** The problem is in $\mathbf{P}$ on the RAM (because $\Theta(n^3)$ is polynomial) and in $\mathbf{P}$ on the Turing machine (because $\Theta(n^9)$ is also polynomial). The Cobham–Edmonds thesis (§5.2) tells us that "polynomial-time-solvable problem" is a property of the problem itself, not of the model — the *exponents* differ but $\mathbf{P}$ does not.
+
+### C.2 — Part II solutions
+
+#### C.2.1
+
+Take $c = 4$ and $n_0 = 5$. Then for $n \ge 5$: $3n + 5 \le 3n + n = 4n = c n$. ✓ (Many other constants work; $c = 8, n_0 = 1$ is also fine.)
+
+#### C.2.2
+
+Take $c_1 = 1/4$, $c_2 = 1$, $n_0 = 7$.
+
+- Upper bound: $\tfrac{n^2 - 3n + 7}{2} \le \tfrac{n^2 + 7}{2} \le n^2$ for $n \ge 3$.
+- Lower bound: for $n \ge 7$, $3n \le n^2/2$, so $\tfrac{n^2 - 3n + 7}{2} \ge \tfrac{n^2 - n^2/2}{2} = \tfrac{n^2}{4}$.
+
+Both hold for $n \ge 7$. ✓
+
+#### C.2.3
+
+(a) **True.** $n^2 \le n \cdot n^2 = n^3$ for $n \ge 1$; take $c = 1, n_0 = 1$.
+
+(b) **False.** $n^3 / n^2 = n \to \infty$, so $n^3 = \omega(n^2)$, not $O(n^2)$.
+
+(c) **True.** $100 n = 100 \cdot n$; constants are absorbed by $\Theta$.
+
+(d) **True.** $2^{n+1} = 2 \cdot 2^n$; take $c = 2, n_0 = 0$.
+
+(e) **False.** $2^{2n} = (2^n)^2$, and $2^{2n} / 2^n = 2^n \to \infty$.
+
+#### C.2.4
+
+$$\log \log n \;\prec\; \log n \;\prec\; (\log n)^{10} \;\prec\; \sqrt n \;\prec\; n \;\prec\; n \log n \;\prec\; n^2 \;\prec\; n^{\log_2 n} \;\prec\; 2^n \;\prec\; n!.$$
+
+Key facts used: every polylog is dominated by every polynomial $(\log n)^{10} = o(n^\varepsilon)$ for every $\varepsilon > 0$; every polynomial is dominated by every exponential $n^k = o(2^n)$; $n^{\log_2 n} = 2^{(\log n)^2}$ is between $\mathrm{poly}(n)$ and $2^n$; Stirling gives $n! = \omega(c^n)$ for every constant $c$.
+
+#### C.2.5
+
+(a) $\lim n^{0.99} / (n^{0.99} \log n) = \lim 1 / \log n = 0$, so $f = o(g)$.
+
+(b) $\lim n \log n / (n^2 / \log n) = \lim (\log n)^2 / n = 0$ (logs vs polys, §9.8), so $f = o(g)$.
+
+(c) $2^{\log_2 n} = n$, so $\lim f/g = 1 \in (0, \infty)$, and $f = \Theta(g)$.
+
+(d) By Stirling, $\log(n!) = n \log n - n + O(\log n) = \Theta(n \log n)$. So $\lim f/g = 1$, and $f = \Theta(g)$.
+
+(e) Let $u = \log n$. Then $f = \sqrt u$, $g = \log u$. As $u \to \infty$, $\sqrt u / \log u \to \infty$ (polynomial in $u$ beats log in $u$). So $f = \omega(g)$.
+
+#### C.2.6
+
+(a) **True (transitivity).** By definition there exist $c_1, n_1$ with $f \le c_1 g$ on $n \ge n_1$, and $c_2, n_2$ with $g \le c_2 h$ on $n \ge n_2$. Then for $n \ge \max(n_1, n_2)$, $f \le c_1 g \le c_1 c_2 h$. So $f = O(h)$ with $c = c_1 c_2$.
+
+(b) **True.** $f + g \le 2 \max(f, g)$, so $c = 2$ works (any $n_0$).
+
+(c) **False in general.** Counterexample: $f(n) = 2n$, $g(n) = n$. Then $f = O(g)$ (with $c = 2$). But $2^{f(n)} = 4^n$ and $2^{g(n)} = 2^n$; $4^n / 2^n = 2^n \to \infty$, so $2^f \ne O(2^g)$. **Big O does not survive exponentiation.**
+
+#### C.2.7
+
+(a) $O(n^2)$ (dominant of $n^2, n \log n, n$).
+
+(b) $O(n \log n) + O(n^2) = O(n^2)$.
+
+(c) $O(n)$ (dominant of $1, \log n, \sqrt n, n$).
+
+#### C.2.8
+
+(a) $\log_2(n^{10}) = 10 \log_2 n$, and constant factors are absorbed.
+
+(b) Change of base: $\log_{10} n = \log_2 n / \log_2 10$. Denominator is a positive constant, absorbed by $\Theta$.
+
+(c) $\log(2^n) = n \log 2 = \Theta(n)$ (constant absorbed).
+
+(d) Let $x = \log_b n$. Then $a^x = a^{\log_b n}$, and $n = b^x$, so $n^{\log_b a} = (b^x)^{\log_b a} = b^{x \log_b a} = (b^{\log_b a})^x = a^x$. Equal exactly, so $\Theta$ holds trivially.
+
+#### C.2.9
+
+(a) Take $\log$ of Stirling: $\log(n!) = \log\sqrt{2\pi n} + n \log(n/e) + \log(1 + \Theta(1/n)) = \tfrac{1}{2}\log(2\pi n) + n \log n - n + O(1/n)$. Dropping lower-order terms: $\log(n!) = n \log n - n + \Theta(\log n)$.
+
+(b) Both $n$ and $\log n$ are $o(n \log n)$, so $\log(n!) = \Theta(n \log n)$.
+
+#### C.2.10
+
+Let $f(n) = n \cdot (2 + \sin n)$ and $g(n) = n$. Then $f(n) \le 3n$ for all $n$, so $f = O(g)$. But $f(n)/g(n) = 2 + \sin n$ oscillates in $[1, 3]$, so the limit does not exist. Using $\limsup$: $\limsup f/g = 3 < \infty$, which is the $O$-condition in disguise (an alternative formulation, see Knuth).
+
+#### C.2.11
+
+(a) $n^2 = 10^{10}$ ops $\div 10^8$ ops/s $= 100$ s. **N**.
+
+(b) $n \log n \approx 10^7 \cdot 23 \approx 2.3 \cdot 10^8$ ops; about $2.3$ s. **N** (close).
+
+(c) $2^{30} \approx 10^9$ ops; about $10$ s. **N**.
+
+(d) $n = 10^9$ ops; about $10$ s. **N**.
+
+(e) $12! = 4.79 \cdot 10^8$ ops; about $5$ s. **N** (borderline).
+
+The lesson: $1$ second buys you roughly $10^8$ ops, so beyond linear at $n = 10^8$ you start running out of time fast. Memorize this calibration.
+
+#### C.2.12
+
+(a) Setting $10^6 n = n^2$ gives $n = 10^6$. So **$A$ is faster when $n > 10^6$, $B$ when $n < 10^6$**.
+
+(b) At $n = 10^4$: $A$ does $10^{10}$ ops; $B$ does $10^8$. **$B$ is $100\times$ faster.**
+
+(c) "Asymptotically faster" describes a *limit*, not a finite-$n$ regime. For inputs that fit in your wall-clock budget, the algorithm with the larger constant can be slower for *every reasonable input*. Profile actual constants before crowning an asymptotic winner — §22.9.
+
+### C.3 — Part III solutions
+
+#### C.3.1
+
+(a) $\Theta(n^2)$ — rectangular nested loop.
+
+(b) $\Theta(n^2)$ — $n \cdot 2n = 2n^2$; constant absorbed.
+
+(c) $\Theta(n)$ — two *sequential* loops; sum rule.
+
+(d) $\Theta(n^2)$ — loop count is $n^2$.
+
+#### C.3.2
+
+The total iterations are
+$$\sum_{i=0}^{n-1} \sum_{j=i}^{n-1} \sum_{k=j}^{n-1} 1 = \binom{n+2}{3} = \frac{n(n+1)(n+2)}{6} = \Theta(n^3).$$
+Three nested triangular loops add another factor and bump the asymptotic class by one. Each new triangular nesting multiplies by $n/k$ where $k$ is the nesting depth, so the constant shrinks (here $1/6$) but the exponent grows.
+
+#### C.3.3
+
+(a) $i$ takes values $1, 3, 9, \ldots, 3^k$ until $3^k \ge n$. Number of iterations $= \lceil \log_3 n \rceil + 1 = \Theta(\log n)$.
+
+(b) $\Theta(\log n)$ (one constant-time body per iteration).
+
+(c) With `i = i * i`, $i$ takes values $2, 4, 16, 256, \ldots, 2^{2^k}$. The loop runs while $2^{2^k} < n$, i.e. $2^k < \log n$, i.e. $k < \log \log n$. So **$\Theta(\log \log n)$ iterations** — drastically fewer.
+
+#### C.3.4
+
+Total work $= \sum_{i=1}^{n} \lfloor n/i \rfloor = n \sum_{i=1}^{n} 1/i + O(n) = n \cdot H_n + O(n) = \Theta(n \log n)$ by the harmonic series (§15.3). This same sum surfaces in randomized quicksort and in many number-theoretic algorithms.
+
+#### C.3.5
+
+Each iteration of the loop increments `counter` by $1$ and either bumps `i` by $1$ (even counter) or by $5$ (odd counter). Over two iterations, `i` advances by $1 + 5 = 6$. To reach `i = n`, the loop runs $\Theta(n/6) \cdot 2 = \Theta(n)$ iterations. **Running time: $\Theta(n)$.**
+
+#### C.3.6
+
+After $k$ iterations, $i = 2^{2^k}$. The loop runs while $i < n$, i.e., $2^k < \log_2 n$, i.e., $k < \log_2 \log_2 n$. **Number of iterations: $\Theta(\log \log n)$.**
+
+#### C.3.7
+
+Each level $\ell$ has $4^\ell$ subproblems each of size $n / 2^\ell$, so level work $= 4^\ell \cdot n / 2^\ell = 2^\ell n$. Per-level work *grows* geometrically by factor $2$ toward the leaves. Total:
+$$T(n) = \sum_{\ell=0}^{\log_2 n} 2^\ell n + \text{leaf cost} = n(2^{\log_2 n + 1} - 1) = \Theta(n^2).$$
+Matches Master Theorem Case 1: $a/b^{c^*} = 4/2 = 2 > 1$, leaves dominate.
+
+#### C.3.8
+
+| | $a$ | $b$ | $c^* = \log_b a$ | $f(n)$ | Compare | Case | $T(n)$ |
+|---|---|---|---|---|---|---|---|
+| (a) | $2$ | $4$ | $1/2$ | $n$ | $n \succ n^{1/2}$ | 3 | $\Theta(n)$ |
+| (b) | $9$ | $3$ | $2$ | $n^2$ | $n^2 \asymp n^2$ | 2 | $\Theta(n^2 \log n)$ |
+| (c) | $1$ | $2$ | $0$ | $1$ | $1 \asymp n^0$ | 2 | $\Theta(\log n)$ |
+| (d) | $1$ | $3/2$ | $0$ | $n$ | $n \succ n^0$ | 3 | $\Theta(n)$ |
+| (e) | $16$ | $4$ | $2$ | $n^2 \log n$ | gap (extended Case 2) | §17.3 | $\Theta(n^2 \log^2 n)$ |
+| (f) | $4$ | $2$ | $2$ | $n^2/\log n$ | gap (smaller than $n^2$) | Master silent | needs §17.3 / recursion tree → $\Theta(n^2 \log \log n)$ |
+
+#### C.3.9
+
+$a = 3$, $b = 2$, $c^* = \log_2 3 \approx 1.585$. $f(n) = n^2 \succ n^{c^*}$ (polynomially larger), Case 3. Regularity: $3 \cdot (n/2)^2 = 3n^2/4 \le k n^2$ for $k = 3/4 < 1$. ✓ **Master Theorem: $T(n) = \Theta(n^2)$.**
+
+Recursion tree: level $\ell$ has $3^\ell$ subproblems of size $n/2^\ell$, level cost $3^\ell (n/2^\ell)^2 = n^2 (3/4)^\ell$. Sum = $n^2 \cdot \tfrac{1}{1 - 3/4} = 4 n^2 = \Theta(n^2)$. ✓
+
+Substitution: guess $T(n) \le c n^2$. Then $T(n) \le 3 c (n/2)^2 + n^2 = \tfrac{3c}{4} n^2 + n^2 = (\tfrac{3c}{4} + 1) n^2$. This is $\le c n^2$ iff $\tfrac{3c}{4} + 1 \le c$, iff $c \ge 4$. ✓ All three agree.
+
+#### C.3.10
+
+Guess $T(n) \le c n$. Then $T(n) \le c \lfloor n/2 \rfloor + c \lfloor n/4 \rfloor + n \le \tfrac{3c}{4} n + n = (\tfrac{3c}{4} + 1) n$. This is $\le c n$ iff $\tfrac{3c}{4} + 1 \le c$, iff $c \ge 4$. ✓ **$T(n) = O(n)$** — no strengthening needed; the obvious guess works because the recursive cost is bounded away from the linear cost ($3/4$ vs $1$).
+
+#### C.3.11
+
+(a) Define $\phi(p) = (1/3)^p + (1/4)^p$. We need $\phi(p) = 1$. Try $p = 0.79$: $\phi(0.79) \approx 0.421 + 0.586 = 1.007$ (slightly over). Try $p = 0.788$: $\phi(0.788) \approx 0.4225 + 0.5870 = 1.0095$ — still slightly over, so $p$ should be a touch larger. Try $p = 0.79$ again more carefully... refined estimate $p \approx 0.788$. (Exact closed form: none — has to be evaluated numerically.)
+
+(b) The Akra–Bazzi formula gives
+$$T(n) = \Theta\!\left(n^p \left(1 + \int_1^n \frac{u}{u^{p+1}}\, du\right)\right) = \Theta\!\left(n^p (1 + n^{1-p}/(1-p))\right).$$
+Since $p < 1$, the integral term dominates: $T(n) = \Theta(n^p \cdot n^{1-p}) = \Theta(n)$. **The recurrence is linear.** The irrational $p$ cancels out in the final answer.
+
+#### C.3.12
+
+$a = 2$, $b = 2$, $c^* = 1$. $f(n) = n / \log n$.
+
+- Case 1 needs $f = O(n^{1 - \varepsilon})$. But $n/\log n$ is *not* polynomially smaller than $n$ — it's only smaller by a $\log$ factor. **Fails.**
+- Case 2 needs $f = \Theta(n)$. But $n/\log n = o(n)$. **Fails.**
+- Case 3 needs $f = \Omega(n^{1 + \varepsilon})$. But $n/\log n = o(n)$. **Fails.**
+
+So Master Theorem is silent. Solve by recursion tree: level $\ell$ has $2^\ell$ subproblems each of size $n/2^\ell$, level cost $2^\ell \cdot (n/2^\ell)/\log(n/2^\ell) = n / (\log n - \ell)$. Sum over $\ell = 0, \ldots, \log n - 1$:
+$$T(n) = \sum_{\ell=0}^{\log n - 1} \frac{n}{\log n - \ell} = n \sum_{k=1}^{\log n} \frac{1}{k} = n \cdot H_{\log n} = \Theta(n \log \log n).$$
+
+#### C.3.13
+
+Let $n$ pushes be performed into a dynamic array starting at capacity $1$.
+
+(a) **Aggregate.** Reallocations happen at sizes $1, 2, 4, 8, \ldots, 2^{\lfloor \log_2 n \rfloor}$; their cost is $1 + 2 + 4 + \cdots + n = 2n - 1$. Plus $n$ unit-cost element writes for the pushes themselves. Total $\le 3n - 1 = O(n)$. Divide by $n$: amortized cost per push $\le 3 = O(1)$.
+
+(b) **Accounting.** Charge each push 3 credits: 1 pays the unit-cost write, 1 is stored on the new element (to pay for its eventual copy on the next reallocation), 1 is stored on the element at position $i - c/2$ where $c$ is the current capacity (paying for *its* re-copy). Invariant: every "old" element has 2 stored credits by the time it must be copied. Reallocation cost is paid entirely out of stored credits. So total charged $\le 3n$, and per-op amortized $\le 3 = O(1)$.
+
+(c) **Potential.** Define $\Phi = 2 \cdot \text{size} - \text{capacity}$. Note $\Phi \ge 0$ when the array is at least half full (true between reallocations).
+
+- *Ordinary push* (no reallocation): $c_i = 1$, $\Delta\Phi = +2$, so $\hat c_i = 1 + 2 = 3$.
+- *Reallocation push:* $c_i = \text{size}_{i-1} + 1$ (copy old elements + write new), capacity doubles from $\text{size}_{i-1}$ to $2 \cdot \text{size}_{i-1}$. So $\text{size}_i = \text{size}_{i-1} + 1$, capacity $_i = 2 \text{size}_{i-1}$. $\Phi_i - \Phi_{i-1} = (2(\text{size}_{i-1} + 1) - 2 \text{size}_{i-1}) - (2 \text{size}_{i-1} - \text{size}_{i-1}) = 2 - \text{size}_{i-1}$. So $\hat c_i = (\text{size}_{i-1} + 1) + (2 - \text{size}_{i-1}) = 3$.
+
+All amortized costs equal $3 = O(1)$. ✓
+
+#### C.3.14
+
+(a) **Halve at load $< 1/2$ allows abuse.** After a reallocation grew the array to capacity $c$, repeatedly alternating `push, pop, push, pop, …` keeps the load oscillating around the threshold and triggers $\Theta(n)$ work *per pair* of operations. Specifically: a push that fills the half-full array triggers doubling ($\Theta(c)$ copies); the next pop drops below $1/2$ and triggers halving ($\Theta(c)$ copies). Each `push + pop` pair costs $\Theta(c)$, so amortized cost is $\Theta(n)$, not $O(1)$.
+
+(b) **Halve at $< 1/4$ gives $O(1)$ amortized.** Use $\Phi = \max(c/2 - s, 2s - c)$, where $s$ = size, $c$ = capacity. After doubling or halving, $s = c/2$, so $\Phi = 0$. Between reallocations $\Phi$ grows. A `push` that triggers doubling does $c$ copies, but $\Phi$ drops from $\Theta(c)$ to $0$ — the actual cost is paid out of accumulated potential. A `pop` that triggers halving (load drops to $1/4$ from $> 1/4$) does $c/4$ copies, but $\Phi$ drops by $c/4$. In all cases the amortized cost is bounded by a constant. (Full proof: case-analyze the four cases push/pop × triggers/doesn't.)
+
+#### C.3.15
+
+Charge each `push` **2 credits**: 1 for the push itself, 1 stored on the pushed element. Charge `pop` and each step of `multipop` **0 credits**: the stored credit on the element being removed pays for its removal. Invariant: every element on the stack carries 1 stored credit. So total credits charged in $m$ operations $\le 2 \cdot (\text{number of pushes}) \le 2m$. Total actual cost $\le 2m = O(m)$. **Per-op amortized cost: $O(1)$.**
+
+#### C.3.16
+
+(a) $\Theta(1)$ — three indices and a temporary swap variable.
+
+(b) $\Theta(n)$ — the memo table.
+
+(c) $\Theta(n)$ — scratch array for the merge step (largest active merge dominates; §20.3).
+
+(d) $\Theta(n)$ — the explicit stack can hold up to $n$ nodes in the worst case (degenerate tree).
+
+(e) $\Theta(2^n \cdot n)$ — there are $2^n$ subsets, each of size up to $n$.
+
+#### C.3.17
+
+Replace the full $\mathrm{LCS}[i][j]$ table by two arrays `prev[0..m]` and `curr[0..m]`. The inner loop becomes:
+
+```python
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        if X[i] == Y[j]:
+            curr[j] = prev[j-1] + 1
+        else:
+            curr[j] = max(prev[j], curr[j-1])
+    prev, curr = curr, prev   # swap; reuse old buffer
+return prev[m]
+```
+
+Two arrays of length $m + 1$, so space $= \Theta(m) = \Theta(\min(n, m))$ if we arrange the loops so the *inner* dimension is the smaller one. **Lost capability:** we no longer have the full table, so we cannot reconstruct the actual LCS sequence by traceback — only its *length*. If you need the sequence, the full $\Theta(nm)$ table is required (or Hirschberg's algorithm: $\Theta(\min(n, m))$ space *and* sequence reconstruction in $\Theta(nm)$ time).
+
+#### C.3.18
+
+(a) **The space is in the call stack.** Each recursive call adds a stack frame (return address, saved `lo`/`hi`/`mid`, etc.). The recursion is $\log_2 n$ levels deep, so the stack holds $\Theta(\log n)$ frames at peak. Each frame is $O(1)$ words but their *count* is $\Theta(\log n)$.
+
+(b) **No, not in Python.** CPython does not perform tail-call optimization (and Guido has refused to add it for traceback-quality reasons). Even though the recursive binary search is technically tail-recursive — the recursive call is the last action — CPython still allocates a stack frame per call. So Python's recursive binary search is $\Theta(\log n)$ auxiliary space. If you need $\Theta(1)$ space, rewrite as the iterative version (the actual standard library does just this).
+
+#### C.3.19
+
+Let $X_i = 1$ if $\pi(i) = i$, else $0$. Then $X = \sum_{i=1}^n X_i$. $\Pr[X_i = 1] = 1/n$ (uniform permutation), so $\mathbb{E}[X_i] = 1/n$. By linearity of expectation, $\mathbb{E}[X] = \sum 1/n = 1$ — **independent of $n$**.
+
+#### C.3.20
+
+(a) $\Pr[M \le x] = \Pr[\text{all } n \text{ draws} \le x] = x^n$ (for $x \in [0,1]$).
+
+(b) Using $\mathbb{E}[M] = \int_0^1 \Pr[M > x] dx = \int_0^1 (1 - x^n) dx = 1 - \tfrac{1}{n+1} = \tfrac{n}{n+1}$. The expected max tends to $1$ as $n$ grows, and the gap $1 - \mathbb{E}[M] = 1/(n+1) = \Theta(1/n)$.
+
+#### C.3.21
+
+Let $T(k)$ be the expected number of comparisons quicksort makes on a uniformly random input of size $k$. The first pivot is uniform among $k$ elements; after partition, it produces subproblems of sizes $i$ and $k - 1 - i$ for $i \in \{0, 1, \ldots, k-1\}$, each with probability $1/k$. The partition itself does $k - 1$ comparisons.
+
+$$T(k) = (k - 1) + \frac{1}{k} \sum_{i=0}^{k-1} (T(i) + T(k - 1 - i)) = (k - 1) + \frac{2}{k} \sum_{i=0}^{k-1} T(i).$$
+
+Multiply by $k$: $k T(k) = k(k-1) + 2 \sum_{i=0}^{k-1} T(i)$. Subtract the same identity for $k - 1$:
+$$k T(k) - (k-1) T(k-1) = 2(k - 1) + 2 T(k - 1).$$
+Rearrange: $\tfrac{T(k)}{k+1} - \tfrac{T(k-1)}{k} = \tfrac{2(k-1)}{k(k+1)}$. Telescoping from $1$ to $n$:
+$$\frac{T(n)}{n+1} = \sum_{k=1}^{n} \frac{2(k-1)}{k(k+1)} = 2 H_{n+1} - 2 \cdot 2 + O(1) \approx 2 H_n - 2.$$
+Multiplying back: $T(n) = 2(n+1) H_n - O(n) = \Theta(n \log n)$. ✓ Same answer, same harmonic-series fingerprint.
+
+#### C.3.22
+
+**Flaw:** the student conflates input *value* $N$ with input *size* $n = \lceil \log_2 N \rceil$. The complexity $O(\sqrt N) = O(2^{n/2})$ is *exponential* in the input size $n$, not polynomial in it. "Polynomial in $N$" does not mean "polynomial in $n$" when $N$ is exponential in $n$.
+
+**Actual complexity in terms of input size $n$:** $\Theta(2^{n/2})$.
+
+**Why this disqualifies the algorithm:** to prove primality $\in \mathbf{P}$, you need an algorithm running in $\mathrm{poly}(n)$ time on input of $n$ bits. Trial division is exponential in $n$. Primality is in $\mathbf{P}$ by the AKS algorithm (2002), which runs in $\tilde O(n^6)$.
+
+### C.4 — Part IV solutions
+
+#### C.4.1
+
+| Criterion | Mergesort | Randomized quicksort |
+|---|---|---|
+| Average time | $\Theta(n \log n)$ | $\Theta(n \log n)$ (expected) |
+| Worst-case time | $\Theta(n \log n)$ | $\Theta(n^2)$ (rare) |
+| Auxiliary space | $\Theta(n)$ (merge buffer) | $\Theta(\log n)$ expected (stack) |
+| Cache locality | Good — sequential merge passes | Excellent — in-place partition |
+| Stability | Stable | Not stable |
+
+For $n = 10^6$, quicksort is typically $\sim 2 \times$ faster in practice due to cache effects, but mergesort is preferred when stability matters or when you need a worst-case guarantee (e.g., real-time systems).
+
+#### C.4.2
+
+The load-bearing line is the tie-break in the merge: **when `L[i] == R[j]`, take from the left**. Concretely:
+
+```python
+if L[i] <= R[j]:   # <= keeps stability; < would break it
+    merged.append(L[i]); i += 1
+else:
+    merged.append(R[j]); j += 1
+```
+
+Equal elements: the one from the *left* subarray appears first in the merge, preserving its earlier-input position. Changing `<=` to `<` would let an equal element from the right come first, breaking stability.
+
+#### C.4.3
+
+**Claim:** any comparison-based algorithm for element distinctness on $n$ items requires $\Omega(n \log n)$ comparisons.
+
+**Reduction.** Suppose algorithm $A$ decides element distinctness using only comparisons. Run $A$ on the input. The execution forms a binary decision tree whose leaves are labeled "all distinct" or "duplicate found at $(i, j)$." Distinct inputs that produce different sorted orderings cannot share a leaf — if they did, $A$ could not distinguish their sort orders, but the *sorted order* of a distinct sequence is determined by the comparisons $A$ made. So the tree has at least $n!$ leaves labeled "all distinct" (one per permutation). Depth $\ge \lceil \log_2 n! \rceil = \Theta(n \log n)$.
+
+#### C.4.4
+
+(a) **Heapsort is not stable.** The sift-down swaps can reorder equal elements arbitrarily; tracking and preserving original positions requires an explicit tiebreaker (e.g., pair each element with its original index).
+
+(b) **On nearly-sorted input:** mergesort still costs $\Theta(n \log n)$ (it doesn't exploit pre-existing order), quicksort's best case is $\Theta(n \log n)$ but with a small constant, and heapsort is $\Theta(n \log n)$ — no advantage. *Insertion sort* is the winner here at $\Theta(n + k)$ where $k$ = inversions. This is why Timsort (Python's default) uses insertion sort on small runs.
+
+(c) **Why heapsort is rarely used:** (i) poor cache locality — sift-down jumps between non-adjacent indices, causing many cache misses; (ii) higher constant factor in practice than quicksort; (iii) not stable. It's preferred only when worst-case $\Theta(n \log n)$ and $\Theta(1)$ space are *both* hard requirements.
+
+#### C.4.5
+
+| Strategy | Total cost |
+|---|---|
+| Linear | $m \cdot n$ |
+| Sort + binary | $n \log n + m \log n$ |
+| Hash | $n + m$ |
+
+Hash dominates linear when $n + m \le m n$, i.e., always for $m \ge 2, n \ge 2$. So **hash beats linear for any nontrivial $m$.**
+
+Sort+binary beats linear when $n \log n + m \log n \le m n$, i.e. $\log n (n + m) \le m n$, i.e. $\log n / n + \log n / m \le 1$, i.e. roughly $m \ge \log n$. So **binary search dominates linear once $m \ge \log n$.**
+
+Sort+binary vs hash: hash wins asymptotically since $m + n < n \log n + m \log n$ for large $m$. Hash is the default for static lookup tables when memory permits.
+
+#### C.4.6
+
+**Invariant (by induction on $k$):** at the moment BFS enqueues the first vertex of $L_{k+1}$, every vertex of $L_k$ has already been enqueued.
+
+*Base ($k = 0$):* $L_0 = \{s\}$ is enqueued first; no vertex of $L_1$ can be reached before $s$ is dequeued.
+
+*Inductive step:* assume the invariant holds for $k - 1$. Every $u \in L_k$ was enqueued by some predecessor $u' \in L_{k-1}$. By the induction hypothesis, all of $L_{k-1}$ was enqueued before any vertex of $L_k$. The FIFO queue dequeues in enqueue order, so every vertex of $L_{k-1}$ is dequeued before any vertex of $L_k$. When a $u \in L_k$ is dequeued, BFS examines its neighbors and enqueues unseen ones — those unseen are exactly the vertices of $L_{k+1}$ adjacent to $u$. The first such enqueue happens only after all of $L_k$ has been *enqueued* (otherwise we would have started examining $L_{k+1}$ before finishing $L_k$). ✓
+
+**Conclusion:** when BFS first sees vertex $v$, the queue has only vertices of distance $\le d(s, v)$, and the path traversed has exactly $d(s, v)$ edges. So the recorded distance is the true shortest-path distance.
+
+#### C.4.7
+
+**Invariant:** when Dijkstra extracts $v$ from the priority queue, the recorded distance $d[v]$ equals the true shortest-path distance from $s$ to $v$.
+
+**Proof.** Suppose for contradiction that $d[v] > \delta(s, v)$ for some extracted $v$. Take the true shortest path $s \to \ldots \to u \to w \to \ldots \to v$ and let $w$ be the first vertex on this path that is *not yet extracted* when $v$ is extracted. So $u$ (the predecessor of $w$) has already been extracted; the invariant gives $d[u] = \delta(s, u)$. The relaxation of edge $(u, w)$ produced $d[w] \le d[u] + \omega(u, w) = \delta(s, u) + \omega(u, w) = \delta(s, w)$.
+
+Now: $\delta(s, w) \le \delta(s, v)$ because $w$ lies on the shortest path to $v$ — **this is where non-negativity is used**. With non-negative weights, every prefix of a shortest path is itself a shortest path.
+
+So $d[w] \le \delta(s, w) \le \delta(s, v) < d[v]$, meaning $w$ should have been extracted *before* $v$ — contradiction. ✓
+
+**Where it fails with negative edges:** the step "$\delta(s, w) \le \delta(s, v)$" assumes adding edges only makes paths longer, which fails when later edges are negative.
+
+#### C.4.8
+
+(a) The smallest counterexample has $3$ vertices and $3$ edges:
+
+```text
+s ─(+2)→ a
+s ─(+5)→ b
+a ─(-4)→ b
+```
+
+True $\delta(s, b) = 2 + (-4) = -2$. Dijkstra extracts $s$ ($d = 0$), then $a$ ($d = 2$), then *should* relax $a \to b$ to $d[b] = -2$. But if it extracted $b$ before $a$ (which it might if $b$ has the smaller tentative distance), it incorrectly fixes $d[b] = 5$. Even when $b$ is extracted *after* $a$, some implementations skip the relaxation of "already extracted" vertices — but the standard Dijkstra fixes $d[b]$ at extraction, so the wrong answer of $d[b] = 2$ from the path $s \to a$ alone (if the negative edge isn't relaxed first) is what classical Dijkstra computes here in its lazy form.
+
+(b) Bellman–Ford on this graph: after pass 1, $d[a] = 2$, $d[b] = 5$. After pass 2 (relax $a \to b$ now that $d[a]$ is final), $d[b] = -2$. After pass 3 ($|V| - 1 = 2$ passes total), no change. Returns the correct $-2$.
+
+#### C.4.9
+
+(a) **LIS.** State: $L[i] = $ length of LIS ending at index $i$. Subproblems: $n$. Per-state: scan $i' < i$, take $\max(L[i'] + 1)$ where $a[i'] < a[i]$. Per-state $\Theta(n)$. Total: $\Theta(n^2)$. (A $\Theta(n \log n)$ algorithm exists using patience sorting / binary search; the $\Theta(n^2)$ DP is the template.)
+
+(b) **Coin change.** State: $C[v] = $ min coins to make value $v$. Subproblems: $V + 1$. Per-state: try each of the $k$ denominations, $\Theta(k)$. Total: $\Theta(kV)$ — *pseudo-polynomial* in $V$.
+
+(c) **Longest palindromic substring.** State: $P[i][j] = $ "is $s[i..j]$ a palindrome?" Subproblems: $\Theta(n^2)$. Per-state: $O(1)$ (look at $P[i+1][j-1]$ and compare $s[i]$ to $s[j]$). Total: $\Theta(n^2)$ time and space (Manacher does it in $\Theta(n)$).
+
+#### C.4.10
+
+(a) **Input size** = $\Theta(n \log V_{\max})$ where $V_{\max}$ is the largest item value/weight: $n$ items each described by $O(\log V_{\max})$ bits, plus the capacity $W$ in $\log W$ bits. Total bits = $\Theta(n \log V_{\max} + \log W)$.
+
+(b) Running time as a function of input size $L$: $\Theta(nW) = \Theta(n \cdot 2^{\log W}) = \Theta(n \cdot 2^L)$ (treating $\log W$ as the dominant bit-length term). **Exponential in the input size**, not polynomial.
+
+(c) **Polynomial approximation (FPTAS sketch).** Scale all item values by a factor $\varepsilon V_{\max}/n$ and round to integers — this caps the *maximum scaled value* at $n/\varepsilon$. Now run the *value-indexed* DP $D[i][v] = $ min weight of subset of first $i$ items with value $\ge v$. State space: $n \cdot (n/\varepsilon) = n^2/\varepsilon$, per-state $O(1)$. Total time: $O(n^2/\varepsilon)$ — **polynomial in $n$ and $1/\varepsilon$.** Approximation factor: $(1 - \varepsilon)$ due to the rounding error.
+
+#### C.4.11
+
+See §C.3.17 — same answer applies, since LCS space reduction is the same DP. Brief version: keep two rolling rows of length $\min(n, m) + 1$, swap each outer iteration. Space: $\Theta(\min(n, m))$. **Lost:** the full table, so traceback to reconstruct the actual LCS sequence is impossible (only its length survives). Hirschberg's algorithm regains the sequence at $\Theta(\min(n, m))$ space and $\Theta(nm)$ time by divide-and-conquer.
+
+#### C.4.12
+
+**By §24.1, any comparison-based sort makes at least $\Omega(n \log n)$ comparisons in the worst case** — that is the information-theoretic lower bound from the decision-tree argument. An $O(n)$ comparison-based sort would have $O(n)$ depth in its decision tree, accommodating only $2^{O(n)}$ leaves — too few to distinguish among $n! = 2^{\Theta(n \log n)}$ permutations. So either the claimed bound is wrong, the analysis is wrong, or the algorithm uses non-comparison operations (radix sort, counting sort, hashing). Polite ask: "Show me your decision tree."
+
+### C.5 — Part V solutions
+
+#### C.5.1
+
+Using §28.2 latencies:
+
+(a) Registers ($< 1$ ns): $10^9 \cdot 10^{-9} \approx 1$ second.
+
+(b) L1 cache ($1$ ns): $1$ second.
+
+(c) Main memory ($100$ ns): $100$ seconds (1.7 minutes).
+
+(d) Spinning disk ($10$ ms): $10^7$ seconds — about $4$ months.
+
+**Lesson:** the RAM model treats all four as "$1$ step" but they differ by $7$ orders of magnitude. Cache locality is not a constant-factor optimization; it can be the dominant cost.
+
+#### C.5.2
+
+(a) **Linear scan**: items are stored contiguously; each block transfer brings in $B$ items, so $\Theta(N/B)$ I/Os.
+
+(b) **Sum**: same as scan — read each block once, accumulate in a register. $\Theta(N/B)$.
+
+(c) **In-place reversal**: pair up positions $i$ and $N - 1 - i$. Naïve approach reads two blocks per swap, but with constant internal memory you can process *pairs* of blocks (one from each end) at once: $\Theta(N/B)$ I/Os.
+
+(d) **External mergesort**: $\Theta((N/B) \log_{M/B}(N/B))$ — the standard result (§29.2). The base of the log is $M/B$ because each merge pass combines $M/B$ runs.
+
+#### C.5.3
+
+(a) RAM cost $= \Theta(N^2)$ since we touch each of $N^2$ entries once.
+
+(b) Naïve transpose accesses $B[j][i]$ in column-major order on $B$ (one element per row, jumping across rows). If a row of $B$ is larger than a block (which happens when $B \ll N$), each write to $B$ requires a separate block transfer. Hence $\Theta(N^2)$ I/Os instead of the $\Theta(N^2/B)$ a scan would cost. The mismatch between *layout* and *access pattern* destroys locality.
+
+(c) **Cache-oblivious recursive transpose.** Split $A$ and $B$ each into four quadrants. Recursively transpose each quadrant of $A$ into the corresponding (transposed-positioned) quadrant of $B$. Base case: a tile that fits in cache ($\sim \sqrt M \times \sqrt M$), which can be transposed in $\Theta(M/B)$ I/Os. The recursion balances row and column access patterns, giving total $\Theta(N^2/B)$ I/Os without ever naming $B$ or $M$ in the code — the analysis simply notes that the recursion bottoms out at the cache size.
+
+#### C.5.4
+
+(a) Each level fans out $B$ ways, so depth $h$ holds up to $B^h$ keys. Need $B^h \ge N$, i.e., $h \ge \log_B N$. **$h = \Theta(\log_B N)$.**
+
+(b) Worst-case search I/O: one block per level. **$\Theta(\log_B N)$ I/Os.**
+
+(c) $N = 10^{10}$, $B = 100$: $h = \log_{100}(10^{10}) = 5$. **Five disk reads to locate any key in a $10^{10}$-element B-tree** — which is why every database uses them.
+
+#### C.5.5
+
+(a) **Reduction.** $W(n) = \Theta(n)$ (one addition per leaf, plus interior nodes; total $\sim 2n$). $S(n) = \Theta(\log n)$ (tree height). **Parallelism $= \Theta(n / \log n)$**, which is high — a reduction scales well.
+
+(b) **Hillis–Steele prefix scan.** $W(n) = \Theta(n \log n)$ — $\log n$ phases, each touching $n$ elements. $S(n) = \Theta(\log n)$ — $\log n$ sequential phases. **Parallelism $= \Theta(n)$.** (Note: Hillis–Steele has *more* work than the optimal $\Theta(n)$-work Blelloch scan, but it has lower constants and is widely used on GPUs.)
+
+(c) **Parallel mergesort with sequential merge.** Two recursive calls in parallel, then a sequential merge of size $n$. $W(n) = 2 W(n/2) + n = \Theta(n \log n)$ (matches sequential). $S(n) = S(n/2) + n = \Theta(n)$ — the sequential merge dominates the critical path. **Parallelism $= \Theta(\log n)$** — modest; a parallel merge improves this to $\Theta(n / \log n)$ work-efficiently.
+
+#### C.5.6
+
+(a) **Brent's bound:** $T_p(n) \ge \max(W/p, S) = \max(n^2/p, n)$.
+
+(b) The bound transitions from $W/p$-dominated to $S$-dominated when $n^2/p = n$, i.e., $p = n$. For $p > n$, extra processors don't help — the critical path is fixed at $n$.
+
+(c) For $n = 10^6$: parallelism $W/S = 10^{12}/10^6 = 10^6$. So up to **about a million processors** can be used productively before the span becomes the bottleneck.
+
+#### C.5.7
+
+**Two-stage argument.**
+
+*Stage 1: identifying the smallest takes at least $\lceil \log_2 n \rceil$ comparisons against it.* In any comparison-based algorithm, the smallest element has been *directly compared* with at least $\lceil \log_2 n \rceil$ others — because each comparison eliminates at most one candidate, and the algorithm must reduce $n$ candidates to $1$, requiring at least $\lceil \log_2 n \rceil$ "rounds" by a tournament argument.
+
+*Stage 2: the second-smallest is among the smallest's opponents.* Any element not compared against the eventual smallest could still be the second-smallest (an adversary can swap such an element with the second-smallest without contradicting the algorithm's recorded comparisons). So the second-smallest is one of the $\le \lceil \log_2 n \rceil$ elements directly compared with the smallest. Identifying *which* of those $\lceil \log_2 n \rceil$ elements is smallest requires $\lceil \log_2 n \rceil - 1$ more comparisons (a tournament among them).
+
+*Total:* (comparisons in stage 1) $+ (\lceil \log_2 n \rceil - 1) \ge (n - 1) + (\lceil \log_2 n \rceil - 1) = n + \lceil \log_2 n \rceil - 2$. ✓
+
+This matches a known constructive algorithm (tournament with rerun on the smallest's opponents), so the bound is **tight**.
+
+#### C.5.8
+
+(a) **Optimal offline.** If $T \le c$, wait for the bus — cost $T$. If $T > c$, take a taxi immediately — cost $c$. So $\mathrm{OPT}(T) = \min(T, c)$.
+
+(b) **"Wait $c$ minutes then taxi" is 2-competitive.** Let $\sigma = T$. Cost of strategy: if $T \le c$, you wait time $T$ and take the bus, cost $T = \mathrm{OPT}$. If $T > c$, you wait $c$ then taxi, cost $c + c = 2c$, and $\mathrm{OPT} = c$. So $\mathrm{ALG}/\mathrm{OPT} \le 2$ in both cases.
+
+(c) **No deterministic strategy beats $2 - o(1)$.** Suppose strategy $A$ waits time $w^*$ before taking a taxi. The adversary chooses $T$:
+
+- If $T = w^* + \varepsilon$: $A$ pays $w^* + c$; $\mathrm{OPT} = \min(T, c) \le c$. Ratio $(w^* + c)/c \to (w^*/c) + 1$.
+- If $T = w^* - \varepsilon$: $A$ pays $T \approx w^*$; $\mathrm{OPT} = T \approx w^*$. Ratio $\to 1$.
+
+The adversary picks whichever makes the ratio bigger. The worst case is at $w^* = c$ (the break-even strategy), where the ratio is exactly $2$. Any deviation makes one side worse. So $2$ is the deterministic optimum; randomized strategies do better ($e/(e-1) \approx 1.582$, the classical ski-rental result with the right random threshold).
+
+---
+
 _End of reference._
