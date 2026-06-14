@@ -18,12 +18,16 @@ SRC ?= ram_model
 PDF := $(BUILD)/$(SRC).pdf
 TEX := $(BUILD)/$(SRC).tex
 
+# --resource-path lets image refs in notes/*.md be written relative to the
+# note file (figures/foo.png), which is what GitHub's renderer expects, while
+# pandoc runs from the repo root.
 PANDOC_FLAGS := \
   --template=$(TEMPLATE) \
   --pdf-engine=xelatex \
   --syntax-highlighting=tango \
   --top-level-division=section \
   --number-sections \
+  --resource-path=.:$(NOTES) \
   --toc
 
 # --- Beamer slides ---
@@ -39,7 +43,7 @@ PANDOC_BEAMER_FLAGS := \
   --syntax-highlighting=tango \
   --slide-level=3
 
-.PHONY: all pdf tex clean watch help list progress regen review slides slides-clean
+.PHONY: all pdf tex clean watch help list progress regen review slides slides-clean figures
 
 help:
 	@echo "Targets:"
@@ -53,6 +57,7 @@ help:
 	@echo "  make progress              - update readme.md progress line from problem statuses"
 	@echo "  make regen                 - re-fetch LeetCode signatures for all stubs (network)"
 	@echo "  make review                - list solved problems by oldest Last-Reviewed (spaced rep)"
+	@echo "  make figures               - regenerate notes/figures/*.png from scripts/figures/ (needs uv)"
 	@echo "  make slides                - build all beamer decks (build/slides_ram_part*.pdf)"
 	@echo "  make $(BUILD)/slides_ram_part1.pdf - build a single deck (1-5)"
 	@echo "  make slides-clean          - remove only the slide PDFs"
@@ -103,3 +108,8 @@ regen:
 
 review:
 	@python3 scripts/review.py
+
+# Figures are committed; rerun only when a scripts/figures/fig_*.py changes.
+figures:
+	@command -v uv >/dev/null 2>&1 || { echo "uv not installed. brew install uv"; exit 1; }
+	uv run --with matplotlib python scripts/figures/generate_all.py
