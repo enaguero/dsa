@@ -1,6 +1,8 @@
 # Notes — Long-Form Study Material
 
-This directory holds the deep, prose-style references for the repository. Where `problems/` is "do the exercise," `notes/` is "understand the theory." Everything here is plain Markdown that GitHub renders directly and that Pandoc compiles to PDF via the eisvogel template (see `docs/BUILDING.md`).
+This directory holds the deep, prose-style references for the repository. Where [`problems/`](../problems/) is "do the exercise," `notes/` is "understand the theory." Everything here is plain Markdown that GitHub renders directly and that Pandoc compiles to PDF via the eisvogel template (see [`docs/BUILDING.md`](../docs/BUILDING.md)).
+
+The top-level [project README](../readme.md) covers both tracks at a glance.
 
 ## What's here
 

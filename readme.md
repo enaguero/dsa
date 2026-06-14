@@ -1,9 +1,91 @@
-# NeetCode 150 — DSA Study Repository
+# DSA Study Repository
 
-A structured repository for working through the [NeetCode 150](https://neetcode.io/practice) problem set.
-Each category folder contains a **theory guide** and **solution stubs** for every problem.
+A two-track repository for learning data structures and algorithms:
+
+- **Theory** — long-form references on the RAM model, asymptotic analysis, analysis mechanics, and a catalog of standard algorithms, plus 60 worked exercises. Lives in [`notes/`](notes/), built to PDF via Pandoc.
+- **Practice** — solution stubs for the [NeetCode 150](https://neetcode.io/practice) problem set, grouped by topic with status tracking and a spaced-repetition review tool. Lives in [`problems/`](problems/).
+
+The progress badge below tracks the practice track. The theory track is catalogued in [`notes/README.md`](notes/README.md).
 
 **Progress: 0 / 150** &nbsp;|&nbsp; Easy: 0 / 28 &nbsp;|&nbsp; Medium: 0 / 101 &nbsp;|&nbsp; Hard: 0 / 21
+
+---
+
+## Repository structure
+
+```
+dsa/
+├── notes/                  ← long-form study material (theory references)
+│   ├── ram_model.md         ← The main reference (~100 PDF pages, RAM model + asymptotic + catalog + 60 exercises)
+│   ├── cheatsheet.md        ← Big-O / Master Theorem / complexity tables
+│   ├── roadmap.md           ← Recommended study path through the problems
+│   ├── NEETCODE-150.md      ← Canonical problem list with categorization
+│   ├── figures/             ← PNG figures embedded by ram_model.md (committed)
+│   ├── slides/              ← Beamer slide decks derived from ram_model.md
+│   └── README.md            ← Reading paths, build commands, figure pipeline
+├── problems/               ← NeetCode 150 solution stubs, grouped by topic
+│   ├── 01-arrays-and-hashing/
+│   ├── 02-two-pointers/
+│   └── ...
+├── scripts/                ← Repo tooling
+│   ├── figures/             ← matplotlib scripts that produce notes/figures/*.png
+│   ├── progress.py          ← Updates the badge above from problem statuses
+│   ├── regenerate_stubs.py  ← Re-fetches LeetCode signatures (network)
+│   └── review.py            ← Spaced-repetition list of Solved problems
+├── docs/                   ← Build / workflow guides
+│   ├── BUILDING.md          ← PDF build prerequisites
+│   └── SOLVING.md           ← Day-to-day solving loop
+├── templates/              ← LaTeX template (eisvogel)
+├── build/                  ← Generated PDFs (gitignored)
+├── Makefile
+└── readme.md               ← You are here
+```
+
+## Two ways to use the repo
+
+### Theory track — read and practice the material
+
+The long-form references live in [`notes/`](notes/). The main document is [`notes/ram_model.md`](notes/ram_model.md): RAM model, asymptotic analysis (formal Parts I–II), analysis mechanics (Part III), an algorithm catalog (Part IV), advanced topics (Part V), plus 60 worked exercises with solutions (Annexes B and C).
+
+```bash
+# Read on GitHub: notes/ram_model.md renders directly, figures and all.
+
+# Build the PDF locally (~2.7 MB, 100 pages):
+make pdf SRC=ram_model
+
+# Build every note's PDF (cheatsheet, ram_model, ...):
+make all
+
+# Live-rebuild on save (needs `brew install fswatch`):
+make watch
+```
+
+Reading paths for different audiences (first-time, theory-focused, code-analysis, lookup), the exercise structure, and the figure pipeline are documented in [`notes/README.md`](notes/README.md). PDF build prerequisites (Pandoc, xelatex, tlmgr packages) are in [`docs/BUILDING.md`](docs/BUILDING.md).
+
+### Practice track — work the NeetCode 150
+
+Solution stubs are in [`problems/<topic>/exercises/<slug>.py`](problems/). Each stub has a fixed docstring header (problem name, LeetCode URL, Status, Approach, complexity) and a runnable `__main__` block.
+
+```bash
+# Pick a problem from the roadmap below, edit the stub, run it:
+python3 problems/01-arrays-and-hashing/exercises/two-sum.py
+
+# Mark `Status: Solved` in the stub's docstring when done; then:
+make progress       # updates the badge above
+
+# Spaced-repetition — list Solved problems by oldest Last-Reviewed:
+make review
+```
+
+The day-to-day solving loop is in [`docs/SOLVING.md`](docs/SOLVING.md).
+
+## Quick links
+
+- [`notes/README.md`](notes/README.md) — Reading paths, build commands, figure pipeline, how to add a new note.
+- [`notes/ram_model.md`](notes/ram_model.md) — The main reference.
+- [`notes/cheatsheet.md`](notes/cheatsheet.md) — Big-O / Master Theorem desk reference.
+- [`docs/BUILDING.md`](docs/BUILDING.md) — Pandoc + xelatex + tlmgr setup.
+- [`docs/SOLVING.md`](docs/SOLVING.md) — Day-to-day problem-solving loop.
 
 ---
 
