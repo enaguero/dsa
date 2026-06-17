@@ -132,6 +132,8 @@ The formal Parts I and II are best read *after* you've used the analysis on real
 
 ---
 
+::: {.advanced}
+
 # Part I — Theoretical Foundations
 
 ## 1. Models of Computation
@@ -343,6 +345,8 @@ Confirm you understood Part I before moving on. Answers in §A.1.
 
 ---
 
+:::
+
 # Part II — Asymptotic Analysis
 
 ## 6. Why We Need Asymptotic Notation
@@ -444,6 +448,8 @@ The same analogy on the _limit line_: where $L = \lim f/g$ lands determines the 
 
 ![Limit-line analogy for the five relations. Each landmark on $L = \lim f(n)/g(n)$ pins down one of $o$, $\Theta$, $\omega$ — mirroring $<$, $=$, $>$ on real numbers. $O(g)$ (blue, "$\le$") spans the left half-line; $\Omega(g)$ (orange, "$\ge$") spans the right. Their overlap is exactly $\Theta(g)$ — the case where $f$ and $g$ grow at the same rate.](figures/limit-line-asymptotic-relations.png)
 
+::: {.advanced}
+
 ## 9. Properties and Theorems
 
 The following identities and rules let you manipulate asymptotic expressions algebraically.
@@ -527,6 +533,8 @@ so $(\log n)^b = o(n^a)$. Polynomials dominate polylogs.
 
 When the limit does _not_ exist (oscillating functions), one must use the definitions directly via $\limsup$ and $\liminf$.
 
+:::
+
 ## 11. The Hierarchy of Growth Rates
 
 The following functions are listed in order of strictly increasing growth rate. Each function is dominated by every function below it.
@@ -608,6 +616,8 @@ Confirm you understood Part II before moving on. Answers in §A.2.
 
 # Part III — The Mechanics of Algorithm Analysis
 
+::: {.advanced}
+
 ## 12. Best, Worst, and Average Case
 
 The number of steps an algorithm performs depends not just on the input size $n$ but on _which_ input of size $n$ it receives. Three measures are standard.
@@ -650,6 +660,8 @@ These terms are often used interchangeably, but there is a subtle distinction:
 - **Expected** typically means averaging over the _random choices the algorithm makes_. A randomized algorithm may have a worst-case expected running time that is taken over its internal coin flips for _every_ input.
 
 Randomized quicksort's $\Theta(n \log n)$ bound is of the second kind: for any fixed input, its expected running time over random pivots is $\Theta(n \log n)$.
+
+:::
 
 ## 13. A Systematic Procedure for Analysis
 
@@ -754,6 +766,8 @@ for i = 1 to n:
 
 The outer loop runs $n$ times. The inner loop runs $\Theta(\log n)$ times each. Cost: $\Theta(n \log n)$.
 
+::: {.advanced}
+
 ### 14.6 The amortized loop
 
 ```text
@@ -780,6 +794,8 @@ Cost: $\Theta(f(n))$. The bound need not be a polynomial.
 ### 14.8 Loops over data structures
 
 If a loop iterates over the elements of a structure rather than counting from 1, the cost is the size of the structure times the body's cost. For a graph adjacency-list traversal, the total cost over all vertex iterations is $\Theta(|V| + |E|)$ — the well-known "handshake" result.
+
+:::
 
 ### 14.9 Pattern dictionary: code shape → complexity at a glance
 
@@ -809,6 +825,8 @@ The single most useful skill for interviews is reading a piece of code and recog
 **A common trap.** Python's slicing (`nums[i:j]`) and `list.copy()` are $\Theta(n)$, not $\Theta(1)$. A "clean" recursive solution that passes `arr[1:]` each call hides a quadratic cost. Same with string concatenation in a loop: each `s = s + c` is $\Theta(|s|)$, so the loop is $\Theta(n^2)$. Use a `list` + `"".join(...)` for $\Theta(n)$.
 
 **Reading constraints as complexity hints.** Problems with explicit input bounds rarely state your target complexity, but they often imply it. If a problem says $n \le 10^5$, the intended solution is $O(n \log n)$ or $O(n \sqrt{n})$. If it says $n \le 10^3$, $O(n^2)$ or $O(n^3)$ is expected. If $n \le 20$, the intended solution is probably exponential (bitmask DP, backtracking with pruning) — see §11.3 for the full table.
+
+::: {.advanced}
 
 ## 15. Useful Summation Formulas
 
@@ -862,6 +880,8 @@ Example: $\sum_{i=1}^{n} \frac{1}{i(i+1)} = \sum_{i=1}^{n} \left(\frac{1}{i} - \
 
 _Where this appears:_ the $\Theta(n)$ bound for `build-heap` (§24.5), where summing $O(\text{height} - d)$ over all nodes telescopes to a constant times $n$; and amortized analyses where $\Delta\Phi$ terms across operations telescope to $\Phi_{\mathrm{final}} - \Phi_{\mathrm{initial}}$.
 
+:::
+
 ## 16. Analyzing Recursive Algorithms
 
 A recursive algorithm's running time satisfies a **recurrence relation**: an equation expressing $T(n)$ in terms of $T$ evaluated at smaller inputs.
@@ -904,6 +924,8 @@ $$T(n) \;=\; n^2 \sum_{k=0}^{\log_2 n} \frac{1}{2^k} \;\le\; n^2 \cdot 2 \;=\; \
 **Comparing the two.** In example 1 the work was *spread evenly* over $\log n$ levels; in example 2 the same number of levels exists but the work is *concentrated at the root*. The recursion tree shows this at a glance. The Master Theorem in §17 mechanizes the same comparison — example 1 is Case 2 (levels equal), example 2 is Case 3 (root dominates). Once you've drawn enough trees, you'll often skip the picture and just apply the theorem.
 
 The technique also handles recurrences the Master Theorem cannot (§17.5, §18). When the subproblems are unequal sizes or when $f(n)$ has logarithmic factors, the per-level sum is still mechanical to compute — only the closed-form solving step gets harder.
+
+::: {.advanced}
 
 ### 16.2 The Master Theorem
 
@@ -953,6 +975,8 @@ Use this decision tree:
 4. Subtractive recurrence ($T(n-1)$, $T(n-2)$), or you have a tight guess from §16.1 you need to prove? → **Substitution (§16.3)** with induction.
 
 The recursion tree comes first because *every other method's intuition lives there*. Draw it once and the Master Theorem cases become obvious.
+
+:::
 
 ## 17. The Master Theorem
 
@@ -1023,6 +1047,8 @@ The intuition is the same recursion-tree calculation: every level still contribu
 | $T(n) = 7T(n/2) + n^2$ | $7$ | $2$ | $\log_2 7 \approx 2.81$ | $\Theta(n^2)$ | 1    | $\Theta(n^{\log_2 7})$ |
 
 The last entry is the celebrated **Strassen's matrix multiplication**: by performing 7 (rather than 8) recursive multiplications on submatrices of size $n/2$, Strassen achieves $\Theta(n^{\log_2 7}) \approx \Theta(n^{2.807})$ — beating the naive $\Theta(n^3)$.
+
+::: {.advanced}
 
 ### 17.5 Where the Master Theorem stays silent
 
@@ -1249,9 +1275,13 @@ The distinction matters in practice. A surgical robot needs Las Vegas (never wro
 
 A subtler third category, the **Atlantic City algorithm**, allows both bounded running time and bounded error probability — but is rarely needed in algorithms work and is omitted here.
 
+:::
+
 ## 22. Common Pitfalls in Algorithm Analysis
 
 The mistakes below appear in interviews, papers, and code reviews far more often than they should. Each one looks plausible at a glance and quietly corrupts the analysis.
+
+::: {.advanced}
 
 ### 22.1 Confusing $O$ with $\Theta$
 
@@ -1314,6 +1344,8 @@ The classic case: galactic algorithms (e.g., the $O(n^{2.373})$ matrix-multiplic
 
 A recurrence $T(n) = 2 T(n/2) + n$ with $T(1) = 1$ solves to $\Theta(n \log n)$. The same recurrence with $T(1) = n$ does not — the base-case cost violates the assumption $T(1) = \Theta(1)$. Always verify that the base case is constant-time (or factor its cost into the recurrence explicitly).
 
+:::
+
 ### 22.11 Hidden costs in real code: a Python cheat sheet
 
 The pitfalls above are *analysis* errors. The pitfall here is different — it's about reading code. Pseudocode hides operation costs that real code makes explicit, and the most common way an apparently-linear algorithm silently becomes quadratic is by using a "free-looking" operation inside a loop that actually takes $\Theta(n)$ time. The asymptotic-class table below covers the standard Python operations a beginning practitioner is most likely to misuse. Cross-language note: the asymptotics are the same in spirit elsewhere; the constants and "amortized" qualifiers differ.
@@ -1357,6 +1389,8 @@ Neither changes the Big-O, but together they routinely account for $2\times$ to 
 
 When in doubt, profile. A $\Theta(n)$ algorithm with a hidden $\Theta(n)$ constant inside the loop body is $\Theta(n^2)$; no amount of asymptotic reasoning saves you if you can't see what each line of real code costs.
 
+::: {.advanced}
+
 ### Test your intuition — Part III
 
 Confirm you understood Part III before moving on. Answers in §A.3.
@@ -1368,9 +1402,13 @@ Confirm you understood Part III before moving on. Answers in §A.3.
 
 ---
 
+:::
+
 # Part IV — Practical Catalog
 
 This catalog gathers the asymptotic complexities of common algorithms, with brief justifications. Use it as a reference and a sanity check on your own analyses.
+
+::: {.advanced}
 
 ## 23. Search Algorithms
 
@@ -1627,6 +1665,8 @@ This is **pseudo-polynomial**: it is polynomial in $n$ and the _value_ $W$, but 
 
 Bellman–Ford can be viewed as a DP over (vertex, hop count). With $n$ vertices and up to $n-1$ hops, $n \cdot (n-1) = \Theta(n^2)$ subproblems, each $\Theta(\deg(v))$ work. Total $\Theta(nm)$.
 
+:::
+
 ## 27. A Catalog of Recurrences
 
 The following recurrences and their solutions cover the majority of cases that arise in practice.
@@ -1647,6 +1687,8 @@ The following recurrences and their solutions cover the majority of cases that a
 | $T(n) = \sqrt{n} \cdot T(\sqrt{n}) + \Theta(n)$ | $\Theta(n \log \log n)$ | (Some specialized DPs)                    |
 | $T(n) = 7T(n/2) + \Theta(n^2)$                  | $\Theta(n^{\log_2 7})$  | Strassen's matmul                         |
 
+::: {.advanced}
+
 ### Test your intuition — Part IV
 
 Confirm you understood Part IV before moving on. Answers in §A.4.
@@ -1657,6 +1699,10 @@ Confirm you understood Part IV before moving on. Answers in §A.4.
 4. Walk through BFS's per-vertex cost on an adjacency-list graph and aggregate to derive its total complexity. Where does the asymmetry between $|V|$ and $|E|$ in the final bound come from, and what would change if the graph were stored as an adjacency matrix instead?
 
 ---
+
+:::
+
+::: {.advanced}
 
 # Part V — Beyond the Basic RAM Model
 
@@ -3107,6 +3153,8 @@ This matches a known constructive algorithm (tournament with rerun on the smalle
 The adversary picks whichever makes the ratio bigger. The worst case is at $w^* = c$ (the break-even strategy), where the ratio is exactly $2$. Any deviation makes one side worse. So $2$ is the deterministic optimum; randomized strategies do better ($e/(e-1) \approx 1.582$, the classical ski-rental result with the right random threshold).
 
 ---
+
+:::
 
 ## D. Glossary and symbol index
 

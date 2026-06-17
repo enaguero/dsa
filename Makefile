@@ -17,6 +17,8 @@ TEXS := $(patsubst $(NOTES)/%.md,$(BUILD)/%.tex,$(SRCS))
 SRC ?= ram_model
 PDF := $(BUILD)/$(SRC).pdf
 TEX := $(BUILD)/$(SRC).tex
+ESSENTIALS_PDF := $(BUILD)/$(SRC)_essentials.pdf
+ADVANCED_FILTER := templates/strip-advanced.lua
 
 # --resource-path lets image refs in notes/*.md be written relative to the
 # note file (figures/foo.png), which is what GitHub's renderer expects, while
@@ -43,12 +45,13 @@ PANDOC_BEAMER_FLAGS := \
   --syntax-highlighting=tango \
   --slide-level=3
 
-.PHONY: all pdf tex clean watch help list progress regen review slides slides-clean figures
+.PHONY: all pdf tex essentials clean watch help list progress regen review slides slides-clean figures
 
 help:
 	@echo "Targets:"
 	@echo "  make all                   - build PDFs for every note in $(NOTES)/"
-	@echo "  make pdf                   - build $(PDF) from $(NOTES)/$(SRC).md"
+	@echo "  make pdf                   - build $(PDF) from $(NOTES)/$(SRC).md (full reference)"
+	@echo "  make essentials            - build $(ESSENTIALS_PDF), stripping advanced sections"
 	@echo "  make tex                   - build $(TEX) from $(NOTES)/$(SRC).md"
 	@echo "  make $(BUILD)/<name>.pdf $(if $(BUILD), )- build a specific PDF (e.g. make $(BUILD)/cheatsheet.pdf)"
 	@echo "  make watch                 - rebuild $(PDF) on every save of $(NOTES)/$(SRC).md (needs fswatch)"
@@ -72,6 +75,7 @@ all: $(PDFS)
 
 pdf: $(PDF)
 tex: $(TEX)
+essentials: $(ESSENTIALS_PDF)
 
 $(BUILD):
 	@mkdir -p $(BUILD)
@@ -81,6 +85,11 @@ $(BUILD)/%.pdf: $(NOTES)/%.md $(TEMPLATE) | $(BUILD)
 
 $(BUILD)/%.tex: $(NOTES)/%.md $(TEMPLATE) | $(BUILD)
 	$(PANDOC) $< -o $@ --standalone $(PANDOC_FLAGS)
+
+# Two-track build: applying templates/strip-advanced.lua drops every fenced
+# div tagged `::: {.advanced}` ... `:::`, leaving an essentials-only subset.
+$(BUILD)/%_essentials.pdf: $(NOTES)/%.md $(TEMPLATE) $(ADVANCED_FILTER) | $(BUILD)
+	$(PANDOC) $< -o $@ $(PANDOC_FLAGS) --lua-filter=$(ADVANCED_FILTER)
 
 slides: $(SLIDES_PDFS)
 

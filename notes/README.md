@@ -43,11 +43,14 @@ Solutions are in **§C**, structured so the solution to `B.k.j` is at `C.k.j`. A
 
 ## Building the PDFs
 
-Quick reference (full prerequisites are in `docs/BUILDING.md`):
+Quick reference (full prerequisites are in [`docs/BUILDING.md`](../docs/BUILDING.md)):
 
 ```bash
-# Build ram_model.pdf (the default SRC).
+# Build ram_model.pdf (the default SRC) — full ~108-page reference.
 make pdf
+
+# Build ram_model_essentials.pdf — ~28-page subset for first-time readers.
+make essentials
 
 # Build any other note.
 make pdf SRC=cheatsheet
@@ -63,6 +66,27 @@ make watch
 ```
 
 Output PDFs land in `build/`. The `build/` directory is gitignored — only the markdown sources are committed.
+
+### Two-track build: full reference vs. essentials
+
+`ram_model.md` is a single source that compiles into two PDFs:
+
+- **`build/ram_model.pdf`** — the full ~108-page reference. Pandoc reads the markdown as-is.
+- **`build/ram_model_essentials.pdf`** — a ~28-page subset with the deep material stripped out: quickstart, asymptotic notation, growth hierarchy, loop patterns, recursion-tree method, Master Theorem core, hidden-costs cheat sheet, recurrence catalog, and the glossary. Just enough to read code, predict complexity, and pass a junior interview.
+
+The mechanism is a Pandoc Lua filter (`templates/strip-advanced.lua`) that drops every fenced div tagged `::: {.advanced}`. To exclude a section from the essentials build, wrap it in markdown:
+
+```markdown
+::: {.advanced}
+
+## 9. Properties and Theorems
+
+The detailed manipulation rules go here…
+
+:::
+```
+
+Default is "include in both builds" — you only need to tag the deep material. Cross-references from kept sections into advanced ones (e.g. "see §17.5") will dangle in the essentials build by design — they become pointers to the full reference.
 
 ## How figures work
 
