@@ -49,9 +49,9 @@ A few conventions:
 
 ---
 
-## A 5-minute quickstart
+## A 10-minute quickstart
 
-If you're new to algorithm analysis and want to know *why* one solution times out while another flies — without first wading through Turing machines and lambda calculus — start here. This section gives you just enough vocabulary and intuition to read code, write down a complexity, and predict whether it will run in time. Come back to the formal Parts I–II once you've analyzed a dozen algorithms and want to understand *why* the analysis works.
+If you're new to algorithm analysis and want to know *why* one solution times out while another flies — without first wading through Turing machines and lambda calculus — start here. This section gives you just enough vocabulary and intuition to read code, write down a complexity, and predict whether it will run in time. Read time is honest: 10–15 minutes if you actually trace the Python and the will-it-fit table. Come back to the formal Parts I–II once you've analyzed a dozen algorithms and want to understand *why* the analysis works.
 
 ### The 5-sentence theory
 
@@ -122,7 +122,7 @@ Problems that state an explicit input bound like "$1 \le n \le 10^5$" are tellin
 
 Three short reading paths, in order of return on investment:
 
-1. **First pass (one hour).** Skim §6 (why asymptotic at all), §7 (Big-O), §11 (growth hierarchy + §11.3 thresholds), §14 (loop patterns), §14.9 (pattern dictionary), §14.10 (hidden costs in real code), §27 (recurrence catalog). That's enough to analyze most algorithms you'll meet day-to-day.
+1. **First pass (one hour).** Skim §6 (why asymptotic at all), §7 (Big-O), §11 (growth hierarchy + §11.3 thresholds), §14 (loop patterns), §14.9 (pattern dictionary), §22 (common pitfalls — especially §22.11 hidden costs in real code), §27 (recurrence catalog). That's enough to analyze most algorithms you'll meet day-to-day.
 2. **Second pass (when stuck on recurrences).** §16 (recursion methods) and §17 (Master Theorem). Mandatory once you start divide-and-conquer.
 3. **Third pass (when stuck on a specific class).** Part IV: §23 search, §24 sort, §25 graph, §26 DP, §27 recurrence catalog.
 
@@ -679,24 +679,18 @@ return -1
 
 **Step 6 — State the bound carefully.** This is the **worst-case** analysis: the loop runs its maximum number of iterations when the target is absent or at a leaf position. The bound is $\boxed{\Theta(\log n)}$ in the worst case. Best case is $\Theta(1)$ (target found at the first mid).
 
-### 13.2 The procedure in general
+### 13.2 The procedure as a checklist
 
-The six steps applied to binary search above are the entire recipe. They look mechanical because they are.
+The example in §13.1 is the recipe. As a quick reference once you've internalized it:
 
-1. **Identify the input size $n$.** Length of an array, vertex count of a graph, bit length of a number. State which.
-2. **Identify the dominant operation.** Pick one that occurs at least as often as any other — a comparison, an array access, an arithmetic op. Every other operation is at most a constant factor more frequent and is absorbed by Big O.
-3. **Count the dominant operations as a function of $n$.** Walk the code applying the structural rules:
-    - constant-time block (no loops or recursion): $O(1)$.
-    - sequence of blocks: $\sum_i T_i(n) = O(\max_i T_i(n))$ (sum rule).
-    - `if`/`else`: max of the two branches' costs.
-    - loop: sum of the body's costs across iterations.
-    - function call: cost of the callee on the arguments actually passed.
-    - recursive call: write a recurrence and solve it (§§16–18).
-4. **Express the count as a closed-form function.** Use summation formulas (§15) for loops, recurrence-solving techniques (§§16–18) for recursion.
-5. **Apply asymptotic notation.** Drop constants and lower-order terms to obtain Big O, $\Theta$, or $\Omega$.
-6. **State the bound carefully.** Specify which case you analyzed (worst, best, average) and whether the bound is $O$, $\Theta$, or $\Omega$ — these qualifiers are not interchangeable (see §22.1, §22.8).
+1. **Identify $n$** — array length, vertex count, bit length. State which.
+2. **Identify the dominant operation** — comparison, array access, arithmetic op.
+3. **Count it as a function of $n$** — use the loop patterns in §14, the summation formulas in §15, or write a recurrence (§§16–18) for recursion.
+4. **Express in closed form** — apply §15 or solve the recurrence.
+5. **Apply asymptotic notation** — drop constants and lower-order terms.
+6. **State the bound** — name the case (worst, best, average) and the form ($O$, $\Theta$, or $\Omega$); see §22.1 and §22.8 for why this matters.
 
-With practice the six steps fuse into one fluent reading of the code. But it pays to do them explicitly at first; the most common interview/exam errors come from skipping step 1 (wrong input size) or step 6 (sloppy quantifier).
+The most common errors are at the endpoints: step 1 (wrong input size, §22.2) and step 6 (sloppy quantifier, §22.8).
 
 ## 14. Analyzing Loops
 
@@ -816,46 +810,6 @@ The single most useful skill for interviews is reading a piece of code and recog
 
 **Reading constraints as complexity hints.** Problems with explicit input bounds rarely state your target complexity, but they often imply it. If a problem says $n \le 10^5$, the intended solution is $O(n \log n)$ or $O(n \sqrt{n})$. If it says $n \le 10^3$, $O(n^2)$ or $O(n^3)$ is expected. If $n \le 20$, the intended solution is probably exponential (bitmask DP, backtracking with pruning) — see §11.3 for the full table.
 
-### 14.10 Hidden costs in real code: a Python cheat sheet
-
-The pattern dictionary in §14.9 assumes you know which operations are $O(1)$ and which are not. In a high-level language like Python, several seemingly innocuous operations are *not* constant-time, and using them inside a loop is the most common way an apparently-linear algorithm silently becomes quadratic.
-
-This table covers the standard Python operations a beginning practitioner is most likely to misuse. The asymptotics are the same in spirit across languages; the constants and "amortized" qualifiers differ.
-
-| Operation | Cost | Note |
-|---|---|---|
-| `nums[i]`, `nums[i] = v` | $O(1)$ | array indexing |
-| `len(x)` | $O(1)$ | cached for built-in containers |
-| `nums.append(x)` | $O(1)$ amortized | doubling array (§19.2) |
-| `nums.pop()` | $O(1)$ | from the end |
-| `nums.pop(0)` | $\Theta(n)$ | shifts every remaining element |
-| `nums.insert(0, x)` | $\Theta(n)$ | shifts every remaining element |
-| `nums[i:j]` | $\Theta(j - i)$ | copies the slice |
-| `min(arr)`, `max(arr)`, `sum(arr)` | $\Theta(n)$ | linear scan |
-| `sorted(arr)`, `arr.sort()` | $\Theta(n \log n)$ | Timsort |
-| `x in nums` (list) | $\Theta(n)$ | linear scan |
-| `x in s` (set / dict) | $O(1)$ avg, $\Theta(n)$ worst | hash lookup |
-| `s.add(x)`, `d[k] = v` | $O(1)$ avg | hash insert |
-| `"a" + "b"` | $\Theta(\|a\| + \|b\|)$ | builds a new string |
-| `s += t` in a loop | **$\Theta(n^2)$** over $n$ iters | rebuilds the string each time — use `"".join(parts)` |
-| `"".join(parts)` | $\Theta(\sum \|p\|)$ | linear in the total length |
-| `collections.deque.appendleft / popleft` | $O(1)$ | use this when you need a queue |
-| `heapq.heappush(h, x)` / `heappop(h)` | $\Theta(\log n)$ | sift up / down |
-| `heapq.heapify(arr)` | $\Theta(n)$ | build-heap (§24.5) |
-| `bisect.bisect_left(arr, x)` | $\Theta(\log n)$ | binary search on a sorted array |
-| Set ops: `a \| b`, `a & b`, `a - b` | $\Theta(\|a\| + \|b\|)$ | iterates both sides |
-| Dict view: `d.keys()`, `d.items()` | $O(1)$ to obtain | but iterating is $\Theta(n)$ |
-| Function call | $O(1)$ but Python overhead is non-trivial — inline hot loops | |
-| Attribute lookup (`obj.attr`) | $O(1)$ but slower than a local — cache in a local var inside hot loops | |
-
-**Three traps that turn linear code quadratic.**
-
-1. **Passing slices through recursion.** A "clean" recursive solution that does `solve(arr[1:])` each call copies $\Theta(n)$ elements per call, so $n$ calls cost $\Theta(n^2)$. Pass an index (`solve(arr, i + 1)`) or a `deque` instead.
-2. **Building a string by `+=`.** `s = ""; for c in chars: s += c` is $\Theta(n^2)$ — each `+=` reallocates the whole string. Use `"".join(chars)` for $\Theta(n)$.
-3. **`x in nums` inside a loop.** `for x in queries: if x in nums: ...` with `nums` a *list* is $\Theta(|queries| \cdot |nums|)$. Convert `nums` to a `set` once outside the loop and the inner check is $O(1)$ — the loop is now $\Theta(|queries| + |nums|)$.
-
-When in doubt, profile. A $\Theta(n)$ algorithm with a hidden $\Theta(n)$ constant inside the loop body is $\Theta(n^2)$; no amount of asymptotic reasoning saves you if you can't see what each line costs.
-
 ## 15. Useful Summation Formulas
 
 Many algorithm analyses reduce to evaluating a sum. The following identities (with proofs by induction or telescoping) cover most cases.
@@ -922,15 +876,34 @@ Three standard methods exist. We present them in the order you should learn them
 
 ### 16.1 The recursion tree method
 
-**Procedure:** Draw the tree of recursive calls. Compute the work at each level. Sum across levels.
+**Procedure.** Draw the tree of recursive calls. At each level, identify the *number* of subproblems and the *size* of each. Multiply to get per-level work. Sum across levels.
 
-**Example.** $T(n) = 2T(n/2) + n$.
+The technique's strength is *seeing where the work concentrates*. Three patterns recur — every level contributes equally; the root dominates; the leaves dominate — and they correspond exactly to the three Master Theorem cases below. Working two contrasting examples here makes the cases concrete.
 
-![Recursion tree for $T(n) = 2T(n/2) + n$ (the mergesort recurrence). At level $k$ there are $2^k$ subproblems each of size $n/2^k$, so the non-recursive work per level is $2^k \cdot (n/2^k) = n$ — every full level contributes the same amount. The tree has $\log_2 n + 1$ levels (one row per halving plus the leaves), and $n$ work each level gives $T(n) = n \cdot (\log_2 n + 1) = \Theta(n \log n)$.](figures/mergesort-recursion-tree.png)
+**Example 1 (levels balanced):** $T(n) = 2T(n/2) + n$.
 
-Each level contributes $n$. The tree has $\log_2 n + 1$ levels. Total: $n \cdot (\log_2 n + 1) = \Theta(n \log n)$.
+At level $k$, there are $2^k$ subproblems each of size $n/2^k$, so the non-recursive work per level is $2^k \cdot (n/2^k) = n$. **Every full level contributes the same $n$.** The tree has $\log_2 n + 1$ levels (one per halving, plus the leaves), so the total is $n \cdot (\log_2 n + 1) = \boxed{\Theta(n \log n)}$.
 
-The recursion tree gives a fast informal answer and is excellent for building intuition about why the recurrence has the solution it does. It also visually justifies the three Master Theorem cases below (leaves dominate, levels equal, root dominates).
+![Recursion tree for $T(n) = 2T(n/2) + n$. Every full level contributes $n$; there are $\log_2 n + 1$ levels; total $\Theta(n \log n)$.](figures/mergesort-recursion-tree.png)
+
+**Example 2 (root dominates):** $T(n) = 2T(n/2) + n^2$.
+
+Same tree structure, but the per-level work changes:
+
+- Level $0$: $1$ node of size $n$. Work $= n^2$.
+- Level $1$: $2$ nodes of size $n/2$. Work $= 2 \cdot (n/2)^2 = n^2 / 2$.
+- Level $2$: $4$ nodes of size $n/4$. Work $= 4 \cdot (n/4)^2 = n^2 / 4$.
+- Level $k$: $2^k$ nodes of size $n/2^k$. Work $= 2^k \cdot (n/2^k)^2 = n^2 / 2^k$.
+
+Per-level work shrinks geometrically toward the leaves. Summing:
+
+$$T(n) \;=\; n^2 \sum_{k=0}^{\log_2 n} \frac{1}{2^k} \;\le\; n^2 \cdot 2 \;=\; \Theta(n^2).$$
+
+**The root's work, $n^2$, swallows everything below it.** Adding all the lower levels only doubles it (the geometric tail). So $T(n) = \boxed{\Theta(n^2)}$ — root-dominated.
+
+**Comparing the two.** In example 1 the work was *spread evenly* over $\log n$ levels; in example 2 the same number of levels exists but the work is *concentrated at the root*. The recursion tree shows this at a glance. The Master Theorem in §17 mechanizes the same comparison — example 1 is Case 2 (levels equal), example 2 is Case 3 (root dominates). Once you've drawn enough trees, you'll often skip the picture and just apply the theorem.
+
+The technique also handles recurrences the Master Theorem cannot (§17.5, §18). When the subproblems are unequal sizes or when $f(n)$ has logarithmic factors, the per-level sum is still mechanical to compute — only the closed-form solving step gets harder.
 
 ### 16.2 The Master Theorem
 
@@ -1024,7 +997,7 @@ The three cases describe **where the work is concentrated** in the recursion tre
 2. **Case 2 (every level contributes equally):** $f(n)$ matches the leaf cost. Each of the $\log_b n$ levels contributes the same $\Theta(n^{c^*})$, giving $\Theta(n^{c^*} \log n)$.
 3. **Case 3 (root dominates):** $f(n)$ is asymptotically larger than the leaf cost. The work at the top level dwarfs everything below.
 
-![Where the work lives, level by level, for the three Master Theorem cases (here $n = 64$, each panel on its own scale). Case 1: per-level work grows by ratio $2$ toward the leaves, so the leaves dominate ($\Theta(n^{c^*})$). Case 2: every level contributes the same amount, summed over $\log_2 n + 1$ levels ($\Theta(n^{c^*} \log n)$). Case 3: per-level work shrinks by ratio $1/2$ toward the leaves, so the root dominates ($\Theta(f(n))$).](figures/master-theorem-work-per-level.png)
+![Per-level work for the three Master Theorem cases (here $n = 64$, each panel on its own scale). Case 1: ratio grows toward the leaves — leaves dominate. Case 2: ratio is $1$ — every level equal. Case 3: ratio shrinks — root dominates.](figures/master-theorem-work-per-level.png)
 
 ### 17.3 Extended Case 2 (logarithmic factors)
 
@@ -1051,35 +1024,31 @@ The intuition is the same recursion-tree calculation: every level still contribu
 
 The last entry is the celebrated **Strassen's matrix multiplication**: by performing 7 (rather than 8) recursive multiplications on submatrices of size $n/2$, Strassen achieves $\Theta(n^{\log_2 7}) \approx \Theta(n^{2.807})$ — beating the naive $\Theta(n^3)$.
 
-### 17.5 Where the Master Theorem fails
+### 17.5 Where the Master Theorem stays silent
 
-The Master Theorem does not apply when:
+Three situations leave the Master Theorem with nothing to say:
 
-- $f(n)$ lies between two consecutive cases (e.g., $f(n) = n \log n$ with $c^* = 1$) — the gap between Case 2 and Case 3 is not just polynomial.
-- The recurrence is not of the canonical form — e.g., $T(n) = T(n/3) + T(2n/3) + n$, where subproblems have different sizes.
-- $a$, $b$, or $f$ are not constants.
+- $f(n)$ lies in the **gap between Case 2 and Case 3** — it is strictly larger than $n^{c^*}$ but only by a logarithmic factor (not polynomially larger).
+- The recurrence is not of the canonical form — e.g., $T(n) = T(n/3) + T(2n/3) + n$, with subproblems of different sizes (use Akra–Bazzi, §18).
+- $a$, $b$, or $f$ are not constants — fall back to substitution or direct unrolling.
 
-For these, use the substitution method, the recursion tree, or the Akra–Bazzi method.
+**Worked example for the gap case.** Consider $T(n) = 2T(n/2) + n \log n$. Here $a = 2$, $b = 2$, so $c^* = \log_2 2 = 1$, and $f(n) = n \log n$. Why each case fails:
 
-### 17.6 Worked example: when the Master Theorem fails
+- *Case 1* needs $f = O(n^{1 - \varepsilon})$ for some $\varepsilon > 0$. But $n \log n$ is *larger* than $n$.
+- *Case 2* needs $f = \Theta(n)$. But $n \log n = \omega(n)$.
+- *Case 3* needs $f = \Omega(n^{1 + \varepsilon})$ for some $\varepsilon > 0$. But $n \log n = o(n^{1 + \varepsilon})$ for every $\varepsilon > 0$, since logs lose to polynomials (§9.8).
 
-Consider $T(n) = 2T(n/2) + n \log n$. Here $a = 2$, $b = 2$, so $c^* = \log_2 2 = 1$, and $f(n) = n \log n$. Compare $f(n)$ to $n^{c^*} = n$:
+So $f(n) = n \log n$ falls into the gap: strictly larger than $n^{c^*} = n$, but not polynomially larger.
 
-- $f(n)$ is **not** $O(n^{1-\varepsilon})$ for any $\varepsilon > 0$ (it is asymptotically larger than $n$).
-- $f(n)$ is **not** $\Theta(n)$ (it is asymptotically larger by a log factor).
-- $f(n)$ is **not** $\Omega(n^{1+\varepsilon})$ for any $\varepsilon > 0$ either, because $n \log n$ grows slower than $n^{1+\varepsilon}$ for every $\varepsilon > 0$.
-
-The function $n \log n$ falls into the **gap between Case 2 and Case 3** — strictly larger than $n^{c^*}$ but not polynomially larger. The Master Theorem says nothing.
-
-**Solving by recursion tree.** At each level $k$ ($k = 0, 1, \ldots, \log_2 n$), there are $2^k$ subproblems each of size $n/2^k$. The non-recursive work at level $k$ is:
+**Solve by recursion tree.** At level $k$ ($k = 0, 1, \ldots, \log_2 n$), there are $2^k$ subproblems each of size $n/2^k$. The non-recursive work at level $k$ is:
 
 $$2^k \cdot (n/2^k) \cdot \log(n/2^k) = n \cdot (\log n - k).$$
 
-Summing across the $\log_2 n$ levels:
+Sum across the $\log_2 n$ levels (let $j = \log n - k$):
 
 $$T(n) = \sum_{k=0}^{\log n - 1} n (\log n - k) = n \cdot \sum_{j=1}^{\log n} j = n \cdot \frac{(\log n)(\log n + 1)}{2} = \Theta(n \log^2 n).$$
 
-**Verification by substitution.** Guess $T(n) \le c \cdot n \log^2 n$. Then
+**Verify by substitution.** Guess $T(n) \le c \cdot n \log^2 n$. Then
 
 $$
 \begin{aligned}
@@ -1092,7 +1061,7 @@ $$
 
 This is $\le c\, n \log^2 n$ provided $(2c - 1) n \log n \ge c\, n$, i.e., for $c \ge 1$ and $n \ge 2$. ✓
 
-**Conclusion:** $T(n) = \Theta(n \log^2 n)$. This recurrence arises in some divide-and-conquer geometry algorithms (e.g., closest-pair when the merge step does an $O(n \log n)$ sort).
+**Conclusion:** $T(n) = \Theta(n \log^2 n)$. This recurrence arises in some divide-and-conquer geometry algorithms (e.g., closest-pair when the merge step does an $O(n \log n)$ sort). Note that §17.3's extended Case 2 makes this a one-line computation: $f(n) = \Theta(n^{c^*} \log^k n)$ with $k = 1$ gives $T(n) = \Theta(n^{c^*} \log^{k+1} n) = \Theta(n \log^2 n)$.
 
 ## 18. The Akra–Bazzi Method
 
@@ -1183,7 +1152,7 @@ A $k$-bit binary counter supports **increment**, which flips bits from the least
 
 Concretely, the first $8$ increments of a $4$-bit counter:
 
-![Top: the first eight increments of a $4$-bit binary counter, with each step's flipped bits shaded. Actual cost varies between $1$ and $4$, but $\Delta\Phi$ moves in the opposite direction so the amortized cost $= \text{actual} + \Delta\Phi$ is a flat $2$ on every row. The totals strip on the bottom shows actual $\le$ amortized $= 2n$. Bottom: the same data as a chart — bars are the actual cost, the purple zigzag is the potential $\Phi$, the flat blue line is the amortized cost. The expensive carry chain at $i = 8$ (cost $4$) lines up exactly with the potential crash $\Phi: 3 \to 1$ that pays for it.](figures/binary-counter-amortized-trace.png)
+![Eight increments of a $4$-bit binary counter. Top: each step's flipped bits shaded; amortized cost is a flat $2$ on every row. Bottom: the same data as a chart — bars are actual cost, purple is potential $\Phi$, the flat blue line is amortized cost.](figures/binary-counter-amortized-trace.png)
 
 The figure's right-hand "amortized" column is a solid run of $2$s while the actual cost varies between $1$ and $4$: this is the algebra $(t+1) + (1-t) = 2$ happening in real numbers. The expensive increment $i = 8$ (carry chain $0111 \to 1000$, cost $4$) coincides exactly with the potential crash $\Phi : 3 \to 1$ that pays for it.
 
@@ -1261,7 +1230,7 @@ using the harmonic series identity $H_n = \Theta(\log n)$ from §15.3.
 
 This is the canonical use of indicator variables: a complex global quantity (total comparisons) is decomposed into pairwise indicators whose probabilities are easy to compute, and linearity of expectation does the rest.
 
-![Why $z_i$ and $z_j$ are compared iff one of them is picked first from the run $\{z_i, \ldots, z_j\}$. The "pivot wall" — the moment some $z_k$ strictly between them is chosen — permanently separates $z_i$ and $z_j$ into different partitions, so they never meet again. Conversely, if $z_i$ or $z_j$ is the first pick from that run, they meet exactly once. Each pick from the run is equally likely, giving $\Pr[\text{compared}] = 2/(j - i + 1)$, which sums via harmonic series to $\Theta(n \log n)$ expected comparisons.](figures/quicksort-pivot-wall.png)
+![Why $z_i$ and $z_j$ are compared in randomized quicksort iff one of *them* is picked first from the run $\{z_i, \ldots, z_j\}$. A pivot $z_k$ strictly between them is a "wall" that separates $i$ and $j$ permanently. Each of the $j - i + 1$ candidates is equally likely first, giving $\Pr[\text{compared}] = 2/(j-i+1)$.](figures/quicksort-pivot-wall.png)
 
 ### 21.2 Las Vegas vs. Monte Carlo
 
@@ -1344,6 +1313,49 @@ The classic case: galactic algorithms (e.g., the $O(n^{2.373})$ matrix-multiplic
 ### 22.10 Trusting the recurrence without checking the base case
 
 A recurrence $T(n) = 2 T(n/2) + n$ with $T(1) = 1$ solves to $\Theta(n \log n)$. The same recurrence with $T(1) = n$ does not — the base-case cost violates the assumption $T(1) = \Theta(1)$. Always verify that the base case is constant-time (or factor its cost into the recurrence explicitly).
+
+### 22.11 Hidden costs in real code: a Python cheat sheet
+
+The pitfalls above are *analysis* errors. The pitfall here is different — it's about reading code. Pseudocode hides operation costs that real code makes explicit, and the most common way an apparently-linear algorithm silently becomes quadratic is by using a "free-looking" operation inside a loop that actually takes $\Theta(n)$ time. The asymptotic-class table below covers the standard Python operations a beginning practitioner is most likely to misuse. Cross-language note: the asymptotics are the same in spirit elsewhere; the constants and "amortized" qualifiers differ.
+
+| Operation | Cost | Note |
+|---|---|---|
+| `nums[i]`, `nums[i] = v` | $O(1)$ | array indexing |
+| `len(x)` | $O(1)$ | cached for built-in containers |
+| `nums.append(x)` | $O(1)$ amortized | doubling array (§19.2) |
+| `nums.pop()` | $O(1)$ | from the end |
+| `nums.pop(0)` | $\Theta(n)$ | shifts every remaining element |
+| `nums.insert(0, x)` | $\Theta(n)$ | shifts every remaining element |
+| `nums[i:j]` | $\Theta(j - i)$ | copies the slice |
+| `min(arr)`, `max(arr)`, `sum(arr)` | $\Theta(n)$ | linear scan |
+| `sorted(arr)`, `arr.sort()` | $\Theta(n \log n)$ | Timsort |
+| `x in nums` (list) | $\Theta(n)$ | linear scan |
+| `x in s` (set / dict) | $O(1)$ avg, $\Theta(n)$ worst | hash lookup |
+| `s.add(x)`, `d[k] = v` | $O(1)$ avg | hash insert |
+| `"a" + "b"` | $\Theta(\|a\| + \|b\|)$ | builds a new string |
+| `s += t` in a loop | **$\Theta(n^2)$** over $n$ iters | rebuilds the string each time — use `"".join(parts)` |
+| `"".join(parts)` | $\Theta(\sum \|p\|)$ | linear in the total length |
+| `collections.deque.appendleft / popleft` | $O(1)$ | use this when you need a queue |
+| `heapq.heappush(h, x)` / `heappop(h)` | $\Theta(\log n)$ | sift up / down |
+| `heapq.heapify(arr)` | $\Theta(n)$ | build-heap (§24.5) |
+| `bisect.bisect_left(arr, x)` | $\Theta(\log n)$ | binary search on a sorted array |
+| Set ops: `a \| b`, `a & b`, `a - b` | $\Theta(\|a\| + \|b\|)$ | iterates both sides |
+| Dict view: `d.keys()`, `d.items()` | $O(1)$ to obtain | iterating the view is $\Theta(n)$ |
+
+**Three traps that turn linear code quadratic.**
+
+1. **Passing slices through recursion.** A "clean" recursive solution that does `solve(arr[1:])` each call copies $\Theta(n)$ elements per call, so $n$ calls cost $\Theta(n^2)$. Pass an index (`solve(arr, i + 1)`) or a `deque` instead.
+2. **Building a string by `+=`.** `s = ""; for c in chars: s += c` is $\Theta(n^2)$ — each `+=` reallocates the whole string. Use `"".join(chars)` for $\Theta(n)$.
+3. **`x in nums` inside a loop.** `for x in queries: if x in nums: ...` with `nums` a *list* is $\Theta(|queries| \cdot |nums|)$. Convert `nums` to a `set` once outside the loop and the inner check is $O(1)$ — the loop is now $\Theta(|queries| + |nums|)$.
+
+**Constant-factor notes (not in the asymptotic table above).** Two Python-specific knobs that *don't* affect the asymptotic class but do affect real runtime:
+
+- **Function-call overhead.** Every Python call allocates a frame; the per-call cost is large compared to compiled languages. Inline tight inner loops when profiling matters.
+- **Attribute lookups.** `obj.attr` performs a dictionary lookup each time. In hot loops, bind to a local: `attr = obj.attr` once outside the loop, then reference `attr` inside.
+
+Neither changes the Big-O, but together they routinely account for $2\times$ to $5\times$ wall-clock differences in CPython.
+
+When in doubt, profile. A $\Theta(n)$ algorithm with a hidden $\Theta(n)$ constant inside the loop body is $\Theta(n^2)$; no amount of asymptotic reasoning saves you if you can't see what each line of real code costs.
 
 ### Test your intuition — Part III
 
@@ -1642,7 +1654,7 @@ Confirm you understood Part IV before moving on. Answers in §A.4.
 1. What is the tight asymptotic lower bound for sorting $n$ items using only comparisons? Sketch the one-paragraph proof.
 2. Why does `build-heap` run in $\Theta(n)$ time, not $\Theta(n \log n)$? Where does the $\log$ factor disappear?
 3. Why is 0/1 knapsack called *pseudo*-polynomial? What changes when you measure the input by bit length instead of value?
-4. What is the asymptotic complexity of BFS on a graph with $|V| = n$ vertices and $|E| = m$ edges in adjacency-list representation? Briefly justify the "handshake" accounting.
+4. Walk through BFS's per-vertex cost on an adjacency-list graph and aggregate to derive its total complexity. Where does the asymmetry between $|V|$ and $|E|$ in the final bound come from, and what would change if the graph were stored as an adjacency matrix instead?
 
 ---
 
@@ -1701,25 +1713,71 @@ When data does not fit in RAM, I/O between RAM and disk dominates. The **Externa
 
 ![External Memory Model (Aggarwal–Vitter). Cost is counted in block transfers between the slow external memory and the fast internal memory of size $M$; CPU work on data already in internal memory is free. Each transfer moves a block of $B$ items at once, so a scan costs $\Theta(N/B)$ and external-memory mergesort costs $\Theta((N/B) \log_{M/B}(N/B))$.](figures/external-memory-model-schematic.png)
 
-### 29.2 Sample bounds
+### 29.2 Sample bounds and their derivations
 
-- **Scanning** $N$ elements: $\Theta(N/B)$ I/Os.
-- **External-memory mergesort**: $\Theta\!\left((N/B) \log_{M/B}(N/B)\right)$ I/Os.
-- **B-tree search**: $\Theta(\log_B N)$ I/Os.
+**Scanning $N$ elements: $\Theta(N/B)$ I/Os.** The array is stored as $\lceil N/B \rceil$ contiguous blocks. A scan reads each block exactly once. CPU work inside a loaded block is free. Done.
 
-These bounds explain why B-trees and external mergesort dominate database and large-scale data processing.
+**B-tree search: $\Theta(\log_B N)$ I/Os.** A B-tree of branching factor $B$ stores $N$ keys in height $h = \Theta(\log_B N)$ (§B.5.4). One node per level is loaded into internal memory and searched in $O(\log B)$ comparisons — but the *I/O count* is what we measure, and each level costs one block transfer. So search costs $\Theta(\log_B N)$ I/Os. For $N = 10^{10}$ and $B = 100$, that's five disk reads. This is why every database uses B-trees.
+
+**External-memory mergesort: $\Theta\!\left((N/B) \log_{M/B}(N/B)\right)$ I/Os.** This is the headline result of the model; here is the derivation.
+
+*Phase 1 — initial-run formation.* Read $M$ items into internal memory (cost $M/B$ I/Os), sort them in place (free in this model), write the sorted run back out (cost $M/B$ I/Os). Repeat $\lceil N/M \rceil$ times. **Net I/O so far: $2(N/B)$** (one pass over the data). We are left with $\lceil N/M \rceil$ sorted runs of size $M$ each.
+
+*Phase 2 — multi-way merging.* To merge $k$ sorted runs in one pass, we need $k$ input buffers of size $B$ (one per run, fed in block-by-block) plus one output buffer of size $B$. That requires $(k + 1) B$ words of internal memory, so the maximum number of runs we can merge at once is $k_{\max} = \lfloor M/B \rfloor - 1 \approx M/B$. We pick $k = M/B$.
+
+Each merge pass:
+
+- Reads each item exactly once and writes each item exactly once → cost $2(N/B)$ I/Os.
+- Reduces the number of remaining runs by a factor of $M/B$.
+
+We start with $N/M$ runs and need to reduce to $1$. Number of passes:
+
+$$\log_{M/B}\!\left(\frac{N}{M}\right) = \log_{M/B}\!\left(\frac{N/B}{M/B}\right) = \log_{M/B}\!\left(\frac{N}{B}\right) - 1.$$
+
+*Total cost.* Phase 1 ($2N/B$) plus Phase 2 ($\sim 2N/B$ per pass × number of passes):
+
+$$T_{\mathrm{sort}}(N) = 2 \cdot \frac{N}{B} + 2 \cdot \frac{N}{B} \cdot \log_{M/B}\!\left(\frac{N}{B}\right) = \Theta\!\left(\frac{N}{B} \log_{M/B}\frac{N}{B}\right).$$
+
+The shape is the same as the RAM mergesort's $\Theta(N \log N)$ — one term per pass, $\log$ passes — but with $B$ items moved per I/O (the $/B$ factor) and a merge fan-out of $M/B$ (the $\log_{M/B}$ base). When internal memory is large enough to hold all the data ($M \ge N$), $\log_{M/B}(N/B) \le 1$ and external mergesort degenerates to a single internal sort, as expected.
+
+These three bounds — scan, B-tree search, external mergesort — explain why B-trees and external mergesort dominate database and large-scale data processing.
 
 ## 30. Cache-Oblivious Analysis
 
-The **cache-oblivious model** (Frigo–Leiserson–Prokop–Ramachandran, 1999) assumes a memory hierarchy but does _not_ tell the algorithm the parameters $M$ and $B$. A cache-oblivious algorithm performs well across _all_ memory hierarchies simultaneously.
+The **cache-oblivious model** (Frigo–Leiserson–Prokop–Ramachandran, 1999) assumes a memory hierarchy with the same $(M, B)$ structure as §29 but does *not* let the algorithm know $M$ or $B$. A *cache-oblivious algorithm* performs well across *all* settings of $M$ and $B$ simultaneously, just by recursing down through all problem sizes — the recursion is guaranteed to pass through the regime where the working set fits in cache, regardless of the cache's actual size.
 
-Examples of cache-oblivious algorithms:
+### 30.1 Why "recursion is universal" works
 
-- Recursive matrix transpose and multiplication.
-- The funnelsort algorithm.
-- The cache-oblivious B-tree.
+A divide-and-conquer algorithm that recurses on geometrically shrinking subproblems passes through *every* size — including the size at which the working set first fits in the cache. Once subproblems fit, the deepest layers of recursion run entirely in cache. The analysis simply notes that the recursion "bottoms out" at the cache size and counts the I/Os done above that point.
 
-The cache-oblivious framework is a remarkable piece of theory: optimal cache performance can often be achieved without knowing the cache parameters at all.
+This is what makes cache-oblivious analysis powerful: a single algorithm runs near-optimally on every level of a hierarchical memory (L1, L2, L3, RAM, SSD, …) without being recompiled or tuned per level. The classical examples are recursive matrix transpose, recursive matrix multiplication, the funnelsort algorithm, and the cache-oblivious B-tree.
+
+### 30.2 Worked example: cache-oblivious matrix transpose
+
+Goal: transpose an $N \times N$ matrix $A$ stored in row-major order into $B$ (also row-major), so that $B[j][i] = A[i][j]$.
+
+**Naive version.** Two nested loops, accessing $A[i][j]$ row-by-row and writing $B[j][i]$ column-by-column. When $N \gg B$ (block size), each write to $B$ jumps across a row that is larger than one cache block, so almost every write triggers a cache miss. I/O cost: $\Theta(N^2)$ — the same as the RAM operation count, with no benefit from cache lines.
+
+**Cache-oblivious recursive version.** Split both $A$ and $B$ into four quadrants of size $(N/2) \times (N/2)$:
+
+$$A = \begin{pmatrix} A_{11} & A_{12} \\ A_{21} & A_{22} \end{pmatrix}, \qquad B = \begin{pmatrix} B_{11} & B_{12} \\ B_{21} & B_{22} \end{pmatrix}.$$
+
+The transpose satisfies $B_{11} = A_{11}^T$, $B_{12} = A_{21}^T$, $B_{21} = A_{12}^T$, $B_{22} = A_{22}^T$. So we make four recursive calls on $(N/2) \times (N/2)$ subproblems with the appropriate placement; no other work is needed.
+
+**Recurrence for I/Os.** Let $T(N)$ be the number of block transfers. Two regimes:
+
+- **Above the cache:** when $N > c \sqrt M$ (the matrix doesn't fit in cache), each recursive call is independent and we get $T(N) = 4 T(N/2) + O(1)$.
+- **Inside the cache:** once $N \le c \sqrt M$ for a suitable constant $c$, both submatrices fit in internal memory simultaneously. The entire subproblem costs $O(N^2 / B)$ I/Os to load and write back. **This is the base case.**
+
+How many leaves does the recursion have at the base level? Each leaf is a tile of size $\sqrt M \times \sqrt M$, and the whole matrix has $N^2$ entries, so there are $N^2 / M$ such tiles. Each tile costs $O(M/B)$ I/Os to transpose. Multiplying tiles by per-tile cost:
+
+$$T(N) \;=\; \frac{N^2}{M} \cdot \frac{M}{B} \;=\; \Theta\!\left(\frac{N^2}{B}\right).$$
+
+(The $M$ cancels — the tile *size* gets absorbed by the fact that we have proportionally fewer larger tiles.)
+
+That is a **factor-$B$ improvement** over the naive $\Theta(N^2)$. Note that the algorithm itself never names $B$ or $M$ — the analysis simply observes that the recursion *will* pass through the cache-fit regime, whatever the actual cache parameters happen to be.
+
+The same recursive structure delivers $\Theta(N^3 / B)$ I/Os for matrix multiplication (with the right placement of recursive calls), again without knowing $B$ or $M$.
 
 ## 31. Parallel Models
 
@@ -1744,9 +1802,47 @@ $$T_p \ge \max(W/p, S),$$
 
 with the bound achievable by a good scheduler (Brent's theorem). For a parallel algorithm to scale well, the work should be close to the sequential complexity, and the span should be polylogarithmic.
 
-For example, parallel mergesort has $W = \Theta(n \log n)$ (matching sequential) and $S = \Theta(\log^2 n)$, giving parallelism $\Theta(n / \log n)$ — sufficient to keep many processors busy.
+![Work and span on a dependency DAG. $W$ is the total number of nodes; $S$ is the length of the longest dependency chain (highlighted). Brent's bound $T_p \ge \max(W/p, S)$ transitions at $p \approx W/S$ — the algorithm's parallelism.](figures/work-span-dag-brent-bound.png)
 
-![Work and span on a dependency DAG. Work $W$ is the total number of nodes (units of computation); span $S$ is the length of the longest dependency chain — the highlighted critical path. Brent's bound $T_p \ge \max(W/p, S)$ pins the running time on $p$ processors between two regimes: $p$ small enough that work-per-processor dominates, and $p$ large enough that the critical path is the bottleneck. The transition happens at $p \approx W/S$, the algorithm's *parallelism*.](figures/work-span-dag-brent-bound.png)
+### 31.3 Worked example: parallel sum reduction
+
+Compute the sum of $n$ values using a balanced binary tree of additions.
+
+**Algorithm.** At round $k$ (for $k = 0, 1, \ldots, \log_2 n - 1$), pair up adjacent elements at positions $2i$ and $2i + 1$ and replace them with their sum. After round $k$, $n / 2^{k+1}$ values remain. All pairings within a round are independent and run in parallel.
+
+**Work.** Each addition reduces the count by one, and the count goes from $n$ to $1$, so total additions $= n - 1$. So $W(n) = \Theta(n)$ — matching the sequential summation.
+
+**Span.** There are $\log_2 n$ rounds, each of which is a single time step (one addition along any root-to-leaf path). So $S(n) = \Theta(\log n)$.
+
+**Parallelism.** $W / S = \Theta(n / \log n)$. For $n = 10^9$, this is about $3 \times 10^7$ — *enough to keep tens of millions of cores busy*, which is wildly more than current hardware. So sum-reduction scales beautifully; the practical bottleneck is *memory bandwidth*, not parallelism.
+
+**Brent's bound, applied.** On $p$ processors, $T_p \ge \max(n/p,\;\log n)$. The transition happens at $p \approx n / \log n$ — adding more processors past this point doesn't help, because the critical path through the addition tree is fixed at $\log n$.
+
+### 31.4 Worked example: parallel mergesort with parallel merge
+
+The version derived here achieves $W = \Theta(n \log n)$ and $S = \Theta(\log^3 n)$ by using a parallel-recursion merge with a sequential binary search inside. A purely sequential merge would push the span up to $\Theta(n)$, killing scalability; Cole's 1988 pipelined algorithm reaches the optimal $\Theta(\log n)$ span but is substantially more complex.
+
+**Parallel merge.** To merge two sorted arrays $L$ and $R$ of total size $n$: pick $L$'s median $m$ (an $O(1)$ index lookup), binary-search for $m$'s position in $R$ ($O(\log n)$ work and span — sequential), then recurse in parallel on the two pairs of half-sized subproblems. Work and span of the merge:
+
+$$W_{\mathrm{merge}}(n) = 2 W_{\mathrm{merge}}(n/2) + O(\log n) = \Theta(n),$$
+
+$$S_{\mathrm{merge}}(n) = S_{\mathrm{merge}}(n/2) + O(\log n) = \Theta(\log^2 n).$$
+
+The work matches the sequential merge; the span is polylogarithmic — that's the key win.
+
+**Mergesort with parallel merge.** Recursive sorts of the two halves run in parallel, then the parallel merge runs sequentially after them.
+
+$$W(n) = 2 W(n/2) + W_{\mathrm{merge}}(n) = 2 W(n/2) + \Theta(n) = \Theta(n \log n) \quad \text{(Master Theorem, Case 2)}.$$
+
+For the span, the two recursive sorts run in parallel, so only the deeper one contributes:
+
+$$S(n) = S(n/2) + S_{\mathrm{merge}}(n) = S(n/2) + \Theta(\log^2 n).$$
+
+Solving this by recursion tree: at level $k$ the subproblem size is $n/2^k$, so its merge contributes $S_{\mathrm{merge}}(n/2^k) = \Theta((\log(n/2^k))^2) = \Theta((\log n - k)^2)$. Summing across the $\log_2 n$ levels (let $j = \log n - k$):
+
+$$S(n) \;=\; \sum_{k=0}^{\log_2 n - 1} (\log n - k)^2 \;=\; \sum_{j=1}^{\log n} j^2 \;=\; \Theta(\log^3 n).$$
+
+So **parallel mergesort with parallel merge:** $W = \Theta(n \log n)$, $S = \Theta(\log^3 n)$, parallelism $\Theta(n / \log^2 n)$. Cole's 1988 algorithm tightens the span to $\Theta(\log n)$ (parallelism $\Theta(n)$) using a pipelined parallel merge, but the analysis is substantially more involved; the version derived here is the standard textbook one. Either way, the algorithm scales to many processors and is the canonical example of a work-efficient, polylog-span parallel sort.
 
 ## 32. Lower Bounds and Adversary Arguments
 
@@ -1840,7 +1936,7 @@ These alternatives have produced more practically meaningful bounds for caching,
 ### A.3 — Part III
 
 1. **$\Theta(\log n)$ iterations.** $i$ takes values $1, 2, 4, 8, \ldots$, reaching $n$ after $\lfloor \log_2 n \rfloor + 1$ doublings. This is the *geometric loop* pattern of §14.4.
-2. **Case 3, $T(n) = \Theta(n)$.** Here $a = 3$, $b = 4$, so $c^* = \log_4 3 \approx 0.79$. Compare $f(n) = n = n^1$ to $n^{c^*} = n^{0.79}$: since $1 > 0.79 + \varepsilon$ for some $\varepsilon > 0$, $f$ is polynomially *larger* than $n^{c^*}$, so we are in Case 3 (root dominates). The regularity condition holds ($3 \cdot f(n/4) = 3n/4 \le k \cdot f(n)$ for $k = 3/4 < 1$), so $T(n) = \Theta(f(n)) = \Theta(n)$. (Common mistake: comparing $f(n) = n$ directly to "$n^1$" and concluding "Case 2." The Master Theorem compares to $n^{c^*}$, not to $n^1$ — read the exponent off $\log_b a$.)
+2. **Case 3, $T(n) = \Theta(n)$.** Here $a = 3$, $b = 4$, so $c^* = \log_4 3 \approx 0.79$. Compare $f(n) = n$ to $n^{c^*} = n^{0.79}$: $f(n) = \Omega(n^{c^* + \varepsilon})$ for any $\varepsilon \le 0.21$, so we are in Case 3 (root dominates). The regularity condition holds: $3 \cdot f(n/4) = 3n/4 \le k \cdot f(n)$ for $k = 3/4 < 1$. So $T(n) = \Theta(f(n)) = \Theta(n)$.
 3. **Both are true; they describe different quantities.** *Per-operation worst case* is $\Theta(n)$: a single push that triggers reallocation copies all $n$ existing elements. *Per-operation amortized* is $O(1)$: over any sequence of $n$ pushes, the total work is at most $3n$ (geometric series $1+2+4+\cdots+n = 2n-1$ for reallocations, plus $n$ for the pushes themselves), so the average per operation is bounded by a constant (§19.2).
 4. **$\Theta(\log n)$ space, from the call stack.** Each recursive call adds a stack frame (return address, locals); the recursion goes $\log_2 n$ levels deep, so the stack holds $\Theta(\log n)$ frames simultaneously. Each frame is $O(1)$ words but their *count* is $\Theta(\log n)$. Iterative binary search avoids this and is truly $\Theta(1)$ space (§20.2).
 
@@ -1849,7 +1945,7 @@ These alternatives have produced more practically meaningful bounds for caching,
 1. **$\Omega(n \log n)$, by an information-theoretic argument.** A comparison-based sort can be modeled as a binary decision tree: each comparison yields one bit. The sort must distinguish among the $n!$ permutations of the input, so the tree needs at least $n!$ leaves. A binary tree with $L$ leaves has depth $\ge \lceil \log_2 L \rceil$, and depth $=$ worst-case number of comparisons. So worst-case comparisons $\ge \lceil \log_2 n! \rceil = \Theta(n \log n)$ by Stirling (§24.1).
 2. **Because most nodes are near the leaves, where sift-down is cheap.** Naively, each of $n$ nodes does $O(\log n)$ work for $O(n \log n)$ total. But a node at depth $d$ in the heap sits at most $h - d$ above the leaves, and there are at most $2^d$ such nodes. Summing $\sum_{d=0}^{h} 2^d (h - d)$ telescopes via the convergent series $\sum_j j/2^j = 2$ to $\le 2n$ — the exponential concentration at the cheap end of the heap kills the $\log$ factor (§24.5).
 3. **Because $\Theta(nW)$ is polynomial in $W$'s *value* but exponential in $W$'s *bit length*.** The input to a knapsack instance is $n$ items plus a capacity $W$; when $W$ is written in binary, the input size is $n + \log_2 W$ bits, so $W$ can be $2^{\log_2 W}$ — exponential in the input size. "Polynomial in $nW$" therefore is *not* polynomial-time in the size of the instance, and knapsack remains NP-hard (§22.2, §26.6).
-4. **$\Theta(n + m)$, by the handshake lemma.** BFS visits each vertex at most once (initial enqueue), which is $\Theta(n)$ work for the vertex bookkeeping. At each vertex it iterates over the adjacency list once; summed across all vertices, that examines each undirected edge from both endpoints (or each directed edge once), totaling $\Theta(m)$ work. The two terms add: $\Theta(n + m)$ (§25.1).
+4. **$\Theta(n + m)$, with the asymmetry coming from the storage format.** Per vertex, BFS does $O(1)$ bookkeeping (mark visited, enqueue) plus iterating the adjacency list. Summing across all $n$ vertices: the bookkeeping totals $\Theta(n)$; the adjacency-list iteration touches each edge a constant number of times (twice in undirected, once in directed), totaling $\Theta(m)$. The two add to $\Theta(n + m)$. In an *adjacency matrix*, finding a vertex's neighbors requires scanning a full row of length $n$, regardless of degree; summed across $n$ vertices the iteration cost becomes $\Theta(n^2)$, which dominates $\Theta(m)$ for sparse graphs. So the format choice is what makes BFS edge-aware instead of vertex-only (§25.1).
 
 ---
 
@@ -2754,15 +2850,47 @@ Let $X_i = 1$ if $\pi(i) = i$, else $0$. Then $X = \sum_{i=1}^n X_i$. $\Pr[X_i =
 
 #### C.3.21
 
-Let $T(k)$ be the expected number of comparisons quicksort makes on a uniformly random input of size $k$. The first pivot is uniform among $k$ elements; after partition, it produces subproblems of sizes $i$ and $k - 1 - i$ for $i \in \{0, 1, \ldots, k-1\}$, each with probability $1/k$. The partition itself does $k - 1$ comparisons.
+Let $T(k)$ denote the expected number of comparisons randomized quicksort makes on a subproblem of size $k$. We derive a recurrence, then solve it.
 
-$$T(k) = (k - 1) + \frac{1}{k} \sum_{i=0}^{k-1} (T(i) + T(k - 1 - i)) = (k - 1) + \frac{2}{k} \sum_{i=0}^{k-1} T(i).$$
+**Setting up the recurrence.** The partition step picks a pivot uniformly at random among the $k$ elements. The partition itself compares the pivot to each of the other $k - 1$ elements — that is **$k - 1$ comparisons**, regardless of which pivot is chosen. After partition, the pivot lands at some rank $i+1$ ($i = 0, 1, \ldots, k-1$), splitting the rest into subproblems of sizes $i$ and $k - 1 - i$. By symmetry each split is equally likely, with probability $1/k$. So:
 
-Multiply by $k$: $k T(k) = k(k-1) + 2 \sum_{i=0}^{k-1} T(i)$. Subtract the same identity for $k - 1$:
-$$k T(k) - (k-1) T(k-1) = 2(k - 1) + 2 T(k - 1).$$
-Rearrange: $\tfrac{T(k)}{k+1} - \tfrac{T(k-1)}{k} = \tfrac{2(k-1)}{k(k+1)}$. Telescoping from $1$ to $n$:
-$$\frac{T(n)}{n+1} = \sum_{k=1}^{n} \frac{2(k-1)}{k(k+1)} = 2 H_{n+1} - 2 \cdot 2 + O(1) \approx 2 H_n - 2.$$
-Multiplying back: $T(n) = 2(n+1) H_n - O(n) = \Theta(n \log n)$. ✓ Same answer, same harmonic-series fingerprint.
+$$T(k) = \underbrace{(k - 1)}_{\text{partition}} + \frac{1}{k} \sum_{i=0}^{k-1} \big( T(i) + T(k - 1 - i) \big).$$
+
+The two terms inside the sum, $T(i)$ and $T(k-1-i)$, range over the same set $\{T(0), T(1), \ldots, T(k-1)\}$ as $i$ varies — just in opposite directions. So the double sum collapses to twice the single sum:
+
+$$T(k) = (k - 1) + \frac{2}{k} \sum_{i=0}^{k-1} T(i). \tag{$\star$}$$
+
+**Solving by the "subtract neighbors" trick.** This isn't a Master Theorem shape — the recursion goes to *every* smaller subproblem, not just one or two. The standard move is to write $(\star)$ for both $k$ and $k - 1$ and subtract, eliminating the sum.
+
+Multiply $(\star)$ by $k$: $k T(k) = k(k-1) + 2 \sum_{i=0}^{k-1} T(i)$.
+
+Write the same for $k - 1$ (note the sum goes only to $k - 2$): $(k-1) T(k-1) = (k-1)(k-2) + 2 \sum_{i=0}^{k-2} T(i)$.
+
+Subtract: the long sums almost cancel, leaving the single term $2 T(k-1)$:
+
+$$k T(k) - (k-1) T(k-1) = k(k-1) - (k-1)(k-2) + 2 T(k-1) = 2(k - 1) + 2 T(k-1).$$
+
+Move the $T(k-1)$ to the left and divide by $k(k+1)$ — this is the magic step. After algebra (factor out $(k+1)$):
+
+$$\frac{T(k)}{k+1} = \frac{T(k-1)}{k} + \frac{2(k-1)}{k(k+1)}.$$
+
+The recurrence is now in **telescoping form** for the new variable $S(k) = T(k)/(k+1)$:
+
+$$S(k) - S(k-1) = \frac{2(k-1)}{k(k+1)}.$$
+
+**Telescoping.** Sum both sides from $k = 1$ to $n$. The left side collapses to $S(n) - S(0) = S(n)$ (using $T(0) = 0$). The right side is:
+
+$$S(n) = \sum_{k=1}^{n} \frac{2(k-1)}{k(k+1)}.$$
+
+Use partial fractions $\frac{k-1}{k(k+1)} = \frac{2}{k+1} - \frac{1}{k}$ (verify by combining the right side). Then:
+
+$$S(n) = 2 \sum_{k=1}^{n} \left( \frac{2}{k+1} - \frac{1}{k} \right) = 4(H_{n+1} - 1) - 2 H_n = 2 H_n - 2 + o(1).$$
+
+**Multiplying back** by $n + 1$:
+
+$$T(n) = (n+1) \cdot S(n) = (n+1)(2 H_n - 2 + o(1)) = 2(n+1) H_n - 2(n+1) = \boxed{\Theta(n \log n)}$$
+
+using $H_n = \Theta(\log n)$. **Same answer** as the §21.1 pairwise-indicator derivation, and the same harmonic-series fingerprint $2 H_n - 2$ appearing as the leading constant. The two approaches converge: pairwise indicators give linearity of expectation directly; the recurrence walks the same expectation through divide-and-conquer. Both routes are worth knowing.
 
 #### C.3.22
 
@@ -2851,17 +2979,25 @@ So $d[w] \le \delta(s, w) \le \delta(s, v) < d[v]$, meaning $w$ should have been
 
 #### C.4.8
 
-(a) The smallest counterexample has $3$ vertices and $3$ edges:
+(a) The smallest counterexample has $3$ vertices and $3$ edges. The trick is to force Dijkstra to *extract* the destination with a wrong value before the improving negative edge can relax it.
 
 ```text
+s ─(+1)→ b
 s ─(+2)→ a
-s ─(+5)→ b
-a ─(-4)→ b
+a ─(−3)→ b
 ```
 
-True $\delta(s, b) = 2 + (-4) = -2$. Dijkstra extracts $s$ ($d = 0$), then $a$ ($d = 2$), then *should* relax $a \to b$ to $d[b] = -2$. But if it extracted $b$ before $a$ (which it might if $b$ has the smaller tentative distance), it incorrectly fixes $d[b] = 5$. Even when $b$ is extracted *after* $a$, some implementations skip the relaxation of "already extracted" vertices — but the standard Dijkstra fixes $d[b]$ at extraction, so the wrong answer of $d[b] = 2$ from the path $s \to a$ alone (if the negative edge isn't relaxed first) is what classical Dijkstra computes here in its lazy form.
+True $\delta(s, b) = \min(1,\; 2 + (-3)) = \min(1, -1) = -1$ via $s \to a \to b$.
 
-(b) Bellman–Ford on this graph: after pass 1, $d[a] = 2$, $d[b] = 5$. After pass 2 (relax $a \to b$ now that $d[a]$ is final), $d[b] = -2$. After pass 3 ($|V| - 1 = 2$ passes total), no change. Returns the correct $-2$.
+**Dijkstra's trace** (classical version: finalize on extract):
+
+1. Push $s$ with $d = 0$. Extract $s$. Relax: $d[a] = 2$, $d[b] = 1$.
+2. Extract $b$ (smallest, $d = 1$). **Finalize $d[b] = 1$.** $b$ has no outgoing edges to relax.
+3. Extract $a$ ($d = 2$). Relax $a \to b$: the relaxation *would* improve $d[b]$ to $2 + (-3) = -1$, but $b$ is already finalized. Classical Dijkstra discards the update.
+
+Output: $d[b] = 1$ instead of the true $-1$. The earlier 3-vertex configuration with positive edges $s \to a$ and $s \to b$ and one negative $a \to b$ does *not* fail Dijkstra — $a$'s smaller distance gets extracted first and the negative edge relaxes $b$ correctly before $b$ is finalized. What matters is that the destination gets popped before the improving edge fires; here, that requires the direct edge $s \to b$ to be the cheapest initial estimate.
+
+(b) **Bellman–Ford** on the same graph runs $|V| - 1 = 2$ relaxation passes over all edges. Pass 1 (any edge order): $d[a] = 2$, $d[b] = 1$ via $s \to b$, and depending on edge order $d[b]$ may also be updated via $a \to b$ to $-1$. Pass 2 catches any leftover: after at most 2 passes, $d[b] = -1$ for any edge order. Returns the correct $-1$.
 
 #### C.4.9
 
@@ -2969,6 +3105,70 @@ This matches a known constructive algorithm (tournament with rerun on the smalle
 - If $T = w^* - \varepsilon$: $A$ pays $T \approx w^*$; $\mathrm{OPT} = T \approx w^*$. Ratio $\to 1$.
 
 The adversary picks whichever makes the ratio bigger. The worst case is at $w^* = c$ (the break-even strategy), where the ratio is exactly $2$. Any deviation makes one side worse. So $2$ is the deterministic optimum; randomized strategies do better ($e/(e-1) \approx 1.582$, the classical ski-rental result with the right random threshold).
+
+---
+
+## D. Glossary and symbol index
+
+A lookup table for the symbols and terms defined throughout the document. The "where" column points to the section that introduces or formally defines the entry.
+
+### D.1 Symbols
+
+| Symbol | Meaning | Where |
+|---|---|---|
+| $n$ | input size (length, vertex count, bit length — context dependent) | §13.1 |
+| $w$ | machine word width in bits | §3.1 |
+| $T(n)$ | running time as a function of input size | §6 |
+| $S(n)$ | space (or parallel span) as a function of input size | §20.1, §31.2 |
+| $\log n$ | $\log_2 n$ unless noted; base irrelevant inside $\Theta$ | conventions |
+| $H_n$ | $n$-th harmonic number $1 + 1/2 + \cdots + 1/n = \Theta(\log n)$ | §15.3 |
+| $O(g)$ | upper bound — there exist $c, n_0$ s.t. $f(n) \le c g(n)$ for $n \ge n_0$ | §7.1 |
+| $\Omega(g)$ | lower bound — dual of $O$ | §7.2 |
+| $\Theta(g)$ | tight bound — $O \cap \Omega$ | §7.3 |
+| $o(g)$ | strict upper — $\lim f/g = 0$ | §8.1 |
+| $\omega(g)$ | strict lower — $\lim f/g = \infty$ | §8.2 |
+| $a, b, c^*$ | Master Theorem parameters — $a$ subproblems of size $n/b$; $c^* = \log_b a$ | §17 |
+| $\varphi$ | golden ratio $(1 + \sqrt 5)/2 \approx 1.618$ — base of naive Fibonacci's complexity | §26.1 |
+| $|V|, |E|$ | vertex and edge counts of a graph; often called $n$ and $m$ | §25 |
+| $M, B$ | internal memory size and block size (external memory model) | §29.1 |
+| $W, S$ | parallel work and span | §31.2 |
+| $\Phi$ | potential function in amortized analysis | §19.1 |
+| $\hat c_i$ | amortized cost of operation $i$; $\hat c_i = c_i + \Delta\Phi_i$ | §19.1 |
+| $\gamma$ | Euler–Mascheroni constant $\approx 0.5772$ — limit of $H_n - \ln n$ | §15.3 |
+| $\alpha(n)$ | inverse Ackermann function — effectively constant | §14.9 |
+
+### D.2 Key terms
+
+| Term | Brief gloss | Where |
+|---|---|---|
+| **RAM model** | Random Access Machine: CPU + unbounded memory, $O(1)$ per instruction | §2 |
+| **Word RAM** | RAM refinement: every register holds $w$ bits, $w \ge \log_2 n$ | §3.1 |
+| **Transdichotomous assumption** | $w \ge \log_2 n$ — one word can address the input | §3.3 |
+| **Uniform cost criterion** | Every basic instruction costs $1$ step regardless of operand size | §4.1 |
+| **Logarithmic cost criterion** | Instruction cost = bit length of operands (for big-integer work) | §4.2 |
+| **Polynomial equivalence** | Reasonable models simulate each other with polynomial overhead | §5.1 |
+| **Cobham–Edmonds thesis** | "Polynomial time = feasible" — independent of model | §5.2 |
+| **Worst / best / average / expected case** | Four distinct quantifiers — never interchangeable | §12, §22.8 |
+| **Stirling's approximation** | $n! = \sqrt{2 \pi n} (n/e)^n (1 + \Theta(1/n))$ | §9.8 |
+| **Master Theorem** | One-line solution for $T(n) = a T(n/b) + f(n)$ | §17 |
+| **Akra–Bazzi method** | Master Theorem generalized to unequal subproblems | §18 |
+| **Substitution method** | Guess + induction; the universal recurrence fallback | §16.3 |
+| **Recursion tree** | Visual method: per-level cost × number of levels | §16.1 |
+| **Amortized analysis** | Average cost over a worst-case operation sequence | §19 |
+| **Aggregate / accounting / potential** | The three classical amortized methods | §19.1, §19.2–§19.4 |
+| **Indicator random variable** | $X_A = 1$ if $A$ occurs; $\mathbb{E}[X_A] = \Pr[A]$ | §21 |
+| **Las Vegas algorithm** | Always correct; random running time | §21.2 |
+| **Monte Carlo algorithm** | Bounded running time; bounded error probability | §21.2 |
+| **Decision tree (sorting)** | Comparison-based-sort lower bound: $\Omega(\log n!) = \Omega(n \log n)$ | §24.1 |
+| **Build-heap** | $\Theta(n)$ via summing per-level work, not $\Theta(n \log n)$ | §24.5 |
+| **Pseudo-polynomial** | Polynomial in a *value* (e.g., $W$) but exponential in its bit length | §22.2, §26.6 |
+| **External memory model** | Two-level memory; cost = block transfers; CPU work free | §29.1 |
+| **Cache-oblivious algorithm** | Optimal on all $(M, B)$ without knowing either | §30 |
+| **Work / span / parallelism** | Total ops / critical path / their ratio | §31.2 |
+| **Brent's theorem** | $T_p \ge \max(W/p, S)$ on $p$ processors | §31.2 |
+| **Competitive ratio** | $\mathrm{ALG}(\sigma) \le c \cdot \mathrm{OPT}(\sigma) + \alpha$ for all $\sigma$ | §33.1 |
+| **Adversary argument** | Opponent answers queries to maintain maximum ambiguity | §32.2 |
+| **Galactic algorithm** | Asymptotically faster but slower on every realistic input | §22.9 |
 
 ---
 
